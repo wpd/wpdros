@@ -1,0 +1,15 @@
+<package>
+  <description brief="wpdps1">
+
+     wpdps1
+
+  </description>
+  <author>Patrick Doyle</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/wpdps1</url>
+  <depend package="rospy"/>
+
+</package>
+
+

@@ -1,0 +1,22 @@
+<launch>
+
+  <!-- start up empty world -->
+  <!-- include file="$(find pr2_gazebo)/empty_world_paused.launch"/-->
+  <!-- start gazebo with an empty plane -->
+  <param name="/use_sim_time" value="true" />
+
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="-g -u $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
+
+
+  <!-- start pr2 robot -->
+  <include file="$(find pr2_gazebo)/pr2.launch"/>
+
+  <!-- start rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" required="true"/>
+
+  <!-- try running the following: (from https://projects.csail.mit.edu/pr2/wiki/index.php?title=Assignment_1:_Grab_Mug)
+rosrun gazebo_tools gazebo_model -f `rospack find gazebo_worlds`/objects/desk5.model spawn table2 -x 5 -y 3 -z .65
+rosrun gazebo_tools gazebo_model -f `rospack find gazebo_worlds`/objects/coffee_cup.model spawn coffee_cup -x 5 -y 3 -z .95 -Y 90
+    -->
+</launch>
+
