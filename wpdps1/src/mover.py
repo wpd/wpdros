@@ -4,11 +4,36 @@ import rospy
 import math
 import sys
 import tf
+
+#from trajectory_msgs.msg import *
+#from actionlib_msgs.msg import *
+#from pr2_controllers_msgs.msg import *
+from pr2_common_action_msgs.msg import *
+import actionlib
+from pr2_tuck_arms_action import tuck_arms_main
+
 from geometry_msgs.msg import Twist
 
 def mover(target_x, target_y, thresh = 0.1):
+    nodename='mover'
     pub = rospy.Publisher('/base_controller/command', Twist)
-    rospy.init_node('mover')
+    rospy.init_node(nodename)
+
+    # goal = TuckArmsGoal()
+    # goal.tuck_left = True
+    # goal.tuck_right = True
+
+    # rospy.logdebug('about to sleep')
+    # tuck_arms_action_server = tuck_arms_main.TuckArmsActionServer('tuck_arms')
+    # rospy.sleep(0.001)  # wait for time
+    # tuck_arm_client = actionlib.SimpleActionClient('tuck_arms',
+    #                                                TuckArmsAction)
+    # rospy.logdebug('Waiting for action server to start')
+    # tuck_arm_client.wait_for_server(rospy.Duration(10.0))
+    # rospy.logdebug('Sending goal to action server')
+    # tuck_arm_client.send_goal(goal)
+
+
     mytf = tf.TransformListener()
     source = "/odom_combined"
     target = "/base_link"
@@ -39,6 +64,6 @@ if __name__ == '__main__':
         target_y = int(sys.argv[2])
 
     try:
-        print "Moving base to (%d, %d)" % (target_x, target_y)
+        print "Moving base to (%f, %f)" % (target_x, target_y)
         mover(target_x, target_y)
     except rospy.ROSInterruptException: pass

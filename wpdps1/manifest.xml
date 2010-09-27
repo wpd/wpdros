@@ -10,6 +10,8 @@
   <url>http://ros.org/wiki/wpdps1</url>
   <depend package="rospy"/>
   <depend package="tf"/>
+
+  <depend package="pr2_tuck_arms_action"/>
 </package>
 
 
