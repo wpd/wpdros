@@ -6,7 +6,7 @@ import sys
 import tf
 from geometry_msgs.msg import Twist
 
-def mover(target_x, target_y):
+def mover(target_x, target_y, thresh = 0.01, min_linv = 0.5):
     pub = rospy.Publisher('/base_controller/command', Twist)
     rospy.init_node('mover')
     mytf = tf.TransformListener()
@@ -25,12 +25,25 @@ def mover(target_x, target_y):
         dx = target_x - translation[0]
         dy = target_y - translation[1]
         distance = math.sqrt(dx*dx + dy*dy)
-        print distance
         cmd = Twist()
-        if distance > 0.01:
-            cmd.linear.x=dx # move faster, the further away we are
-            cmd.linear.y=dy
+
+        # move faster, the further away we are
+        if dx > 0:
+            if dx > thresh:
+                cmd.linear.x = max(dx, min_linv)
+        elif dx < 0:
+            if dx < -thresh:
+                cmd.linear.x = min(dx, -min_linv)
+
+        if dy > 0:
+            if dy > thresh:
+                cmd.linear.y = max(dy, min_linv)
+        elif dy < 0:
+            if dy < -thresh:
+                cmd.linear.y = min(dy, -min_linv)
+
         pub.publish(cmd)
+        print distance,dx,dy,cmd.linear.x, cmd.linear.y
         
         rospy.sleep(0.1)
 if __name__ == '__main__':
