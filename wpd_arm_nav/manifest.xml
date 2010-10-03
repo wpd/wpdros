@@ -1,0 +1,14 @@
+<package>
+  <description brief="wpd_arm_nav">
+
+     wpd_arm_nav
+
+  </description>
+  <author>Patrick Doyle</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/wpd_arm_nav</url>
+
+</package>
+
+
