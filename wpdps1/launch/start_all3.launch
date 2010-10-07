@@ -9,8 +9,12 @@
   <!-- start pr2 robot -->
   <include file="$(find pr2_gazebo)/pr2.launch"/>
 
+  <!-- start 2d navigation stack -->
+  <include file="$(find wpdps1)/launch/wpd_pr2_2dnav.launch"/>
+  <!--<include file="$(find pr2_2dnav_local)/pr2_2dnav.launch"/>-->
+
   <!-- start rviz, shut everything down if dummy kills rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdps1/config/start2.vcg" respawn="false" output="screen" required="true"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdps1/config/start3.vcg" respawn="false" output="screen" required="true"/>
 
 </launch>
 

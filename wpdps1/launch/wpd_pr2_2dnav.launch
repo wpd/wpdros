@@ -1,0 +1,8 @@
+<launch>
+  <!-- adapted from pr2_navigation_apps/pr2_2dnav_local/pr2_2dnav.launch -->
+  <include file="$(find pr2_machine)/$(env ROBOT).machine" />
+  <include file="$(find pr2_navigation_teleop)/teleop.xml" />
+  <include file="$(find pr2_navigation_perception)/lasers_and_filters.xml" />
+  <include file="$(find pr2_navigation_perception)/ground_plane.xml" />
+  <include file="$(find wpdps1)/wpd_move_base.xml" />
+</launch>
