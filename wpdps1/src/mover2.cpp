@@ -84,7 +84,7 @@ int main(int argc, char** argv)
   // Desktop is at (5, 0, 0), size is (0.75, 1.5, 0.10)
   // clearing_radius = 0.59
   // move to (4.1, 0, 0)
-  goal.target_pose.pose.position.x = 4.1; // clearing_radius = 0.59
+  goal.target_pose.pose.position.x = 2.1; // clearing_radius = 0.59
   goal.target_pose.pose.position.y = 0;
   goal.target_pose.pose.orientation.w = 1;
 

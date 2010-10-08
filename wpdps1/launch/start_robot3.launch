@@ -1,0 +1,20 @@
+<launch>
+
+  <!-- start up my own custom world with the table and the cup already set up-->
+  <!-- (adapted from "$(find pr2_gazebo)/empty_world_paused.launch"
+   <param name="/use_sim_time" value="true" />-->
+
+  <!--<node name="gazebo" pkg="gazebo" type="gazebo" args="-g -u $(find wpdps1)/worlds/desk_cup.world" respawn="false" output="screen"/>-->
+
+  <!-- start pr2 robot -->
+  <!--<include file="$(find pr2_gazebo)/pr2.launch"/>-->
+
+  <!-- start 2d navigation stack -->
+  <include file="$(find pr2_2dnav_local)/pr2_2dnav.launch"/>
+
+  <!-- start rviz, shut everything down if dummy kills rviz -->
+  <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdps1/config/start3.vcg" respawn="false" output="screen" required="true"/>-->
+
+  <node name="tuck_arms_action_server" pkg="pr2_tuckarm" type="tuck_arms.py" output="screen"/>
+</launch>
+
