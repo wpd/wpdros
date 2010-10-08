@@ -1,19 +1,18 @@
-AuiManagerPerspective=layout2|name=Render;caption=;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=1020;besth=764;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Displays;caption=Displays;state=2099196;dir=4;layer=0;row=0;pos=0;prop=100000;bestw=500;besth=300;minw=270;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Selection;caption=Selection;state=2099196;dir=2;layer=0;row=0;pos=2;prop=100000;bestw=270;besth=20;minw=270;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Views;caption=Views;state=2099196;dir=2;layer=0;row=0;pos=1;prop=100000;bestw=230;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Tool Properties;caption=Tool Properties;state=2099196;dir=2;layer=0;row=0;pos=0;prop=100000;bestw=230;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Time;caption=Time;state=2099186;dir=3;layer=0;row=0;pos=0;prop=100000;bestw=917;besth=46;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Tools;caption=Tools;state=2108144;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=10;besth=10;minw=386;minh=39;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Camera;caption=Camera;state=2045;dir=4;layer=0;row=0;pos=0;prop=100000;bestw=640;besth=480;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=648;floath=504|dock_size(5,0,0)=307|dock_size(4,0,0)=307|dock_size(2,0,0)=272|dock_size(1,10,0)=41|
-AuiManagerPerspectiveVersion=2
-RecentConfigs=
-LastConfigDir=
-[Window]
-X=648
-Y=24
-Width=1024
-Height=540
-[Plugins]
-[Plugins/Plugin0]
+Background\ ColorR=0
+Background\ ColorG=0
+Background\ ColorB=0
+Fixed\ Frame=/odom_combined
+Target\ Frame=/base_footprint
+Camera.Alpha=0.5
+Camera.Enabled=1
+Camera.Image\ Topic=/wide_stereo/left/image_rect_color
+Camera.Transport\ Hint=raw
+Tool\ 2D\ Nav\ GoalTopic=goal
+Tool\ 2D\ Pose\ EstimateTopic=initialpose
+Camera\ Type=rviz::OrbitViewController
+Camera\ Config=0.977647 1.90085 18.0277 0 0 0
+Property\ Grid\ State=selection=Camera.Enabled.Camera.Image Topic;expanded=.Global Options,Camera.Enabled;scrollpos=0,0;splitterpos=150,285;ispageselected=1
+[Display0]
+Name=Camera
 Package=rviz
-AutoLoad=1
-[Plugins/Plugin1]
-Package=mapping_rviz_plugin
-AutoLoad=1
-[Plugins/Plugin2]
-Package=motion_planning_rviz_plugin
-AutoLoad=1
+ClassName=rviz::CameraDisplay
