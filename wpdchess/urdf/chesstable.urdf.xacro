@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       name="chesstable">
+  <include filename="$(find gazebo_worlds)/objects/table.urdf.xacro"/>
+  <include filename="$(find wpdchess)/urdf/chesspiece.urdf.xacro"/>
+
+  <property name="piece_z" value="0.55" />
+  <property name="pitch" value="0.05"/> <!-- 5cm pitch -->
+  <!-- row 1 location -->
+  <property name="r1" value="${table_x-3.5*pitch}"/>
+  <property name="r2" value="${table_x-2.5*pitch}"/>
+  <property name="r7" value="${table_x+2.5*pitch}"/>
+  <property name="r8" value="${table_x+3.5*pitch}"/>
+
+  <property name="ca" value="${table_y+3.5*pitch}"/>
+  <property name="cb" value="${table_y+2.5*pitch}"/>
+  <property name="cc" value="${table_y+1.5*pitch}"/>
+  <property name="cd" value="${table_y+0.5*pitch}"/>
+  <property name="ce" value="${table_y-0.5*pitch}"/>
+  <property name="cf" value="${table_y-1.5*pitch}"/>
+  <property name="cg" value="${table_y-2.5*pitch}"/>
+  <property name="ch" value="${table_y-3.5*pitch}"/>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wca" color="White" >
+    <origin xyz="${r1} ${ca} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wnb" color="White" >
+    <origin xyz="${r1} ${cb} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wbc" color="White" >
+    <origin xyz="${r1} ${cc} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wq" color="White" >
+    <origin xyz="${r1} ${cd} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wk" color="White" >
+    <origin xyz="${r1} ${ce} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wbf" color="White" >
+    <origin xyz="${r1} ${cf} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wng" color="White" >
+    <origin xyz="${r1} ${cg} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wch" color="White" >
+    <origin xyz="${r1} ${ch} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpa" color="White" >
+    <origin xyz="${r2} ${ca} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpb" color="White" >
+    <origin xyz="${r2} ${cb} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpc" color="White" >
+    <origin xyz="${r2} ${cc} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpd" color="White" >
+    <origin xyz="${r2} ${cd} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpe" color="White" >
+    <origin xyz="${r2} ${ce} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpf" color="White" >
+    <origin xyz="${r2} ${cf} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wpg" color="White" >
+    <origin xyz="${r2} ${cg} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="wph" color="White" >
+    <origin xyz="${r2} ${ch} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <!-- Set up the black pieces -->
+  <xacro:chesspiece parent="table_top_link" piecename="bca" color="Black" >
+    <origin xyz="${r8} ${ca} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bnb" color="Black" >
+    <origin xyz="${r8} ${cb} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bbc" color="Black" >
+    <origin xyz="${r8} ${cc} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bq" color="Black" >
+    <origin xyz="${r8} ${cd} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bk" color="Black" >
+    <origin xyz="${r8} ${ce} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bbf" color="Black" >
+    <origin xyz="${r8} ${cf} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bng" color="Black" >
+    <origin xyz="${r8} ${cg} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bch" color="Black" >
+    <origin xyz="${r8} ${ch} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpa" color="Black" >
+    <origin xyz="${r7} ${ca} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpb" color="Black" >
+    <origin xyz="${r7} ${cb} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpc" color="Black" >
+    <origin xyz="${r7} ${cc} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpd" color="Black" >
+    <origin xyz="${r7} ${cd} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpe" color="Black" >
+    <origin xyz="${r7} ${ce} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpf" color="Black" >
+    <origin xyz="${r7} ${cf} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bpg" color="Black" >
+    <origin xyz="${r7} ${cg} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+
+  <xacro:chesspiece parent="table_top_link" piecename="bph" color="Black" >
+    <origin xyz="${r7} ${ch} ${piece_z}" rpy="0 0 0" />
+  </xacro:chesspiece>
+</robot>

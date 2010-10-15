@@ -1,20 +1,26 @@
 <launch>
-
-  <!-- start up my own custom world with the table and the cup already set up-->
-  <!-- (adapted from "$(find pr2_gazebo)/empty_world_paused.launch"/-->
+  <!-- start up grasp world with no GUI-->
+  <!-- was
+  <include file="$(find pr2_tabletop_manipulation_gazebo_demo)/launch/grasp_world.launch"/>
+  -->
   <param name="/use_sim_time" value="true" />
 
-  <node name="gazebo" pkg="gazebo" type="gazebo" args="-g -u $(find wpdchess)/worlds/tabletop_chess.world" respawn="false" output="screen"/>
+  <!-- grasp.world is basically the same as empty.world, with slightly
+       tweaked quickStep parameters.
+    -->
+  <!--<node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find pr2_tabletop_manipulation_gazebo_demo)/worlds/grasp.world" respawn="false" output="screen"/>
+  -->
+  <!-- Let's use empty world for now - it seems to start faster -->
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
 
-  <!-- start pr2 robot -->
-  <include file="$(find pr2_gazebo)/pr2.launch"/>
+  <!-- send pr2_r_arm.xml to param server -->
+  <!--<include file="$(find pr2_gazebo)/pr2.launch" />-->
+  <include file="$(find pr2_gazebo)/pr2_no_arms.launch" />
 
-  <!-- start 2d navigation stack -->
-  <!--<include file="$(find pr2_2dnav_local)/pr2_2dnav.launch"/>-->
+  <!-- spawn the chess table -->
+  <include file="$(find wpdchess)/launch/make_chess_table.launch"/>
 
   <!-- start rviz, shut everything down if dummy kills rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdps1/config/start3.vcg" respawn="false" output="screen" required="true"/>
-
-  <!--<node name="tuck_arms_action_server" pkg="pr2_tuckarm" type="tuck_arms.py" output="screen"/>-->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdchess)/configs/camera_view.vcg" respawn="false" output="screen" required="true"/>
 </launch>
 

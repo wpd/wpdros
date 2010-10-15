@@ -1,7 +1,0 @@
-<launch>
-  
-  <include file="$(find gazebo_worlds)/launch/empty_world.launch"/>
-  <node name="rviz" pkg="rviz" type="rviz"/>
-  <include file="$(find pr2_gazebo)/pr2_no_arms.launch"/>
-
-</launch>
