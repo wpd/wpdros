@@ -14,8 +14,8 @@
   <node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
 
   <!-- send pr2_r_arm.xml to param server -->
-  <!--<include file="$(find pr2_gazebo)/pr2.launch" />-->
-  <include file="$(find pr2_gazebo)/pr2_no_arms.launch" />
+  <include file="$(find pr2_gazebo)/pr2.launch" />
+  <!--<include file="$(find pr2_gazebo)/pr2_no_arms.launch" />-->
 
   <!-- spawn the chess table -->
   <include file="$(find wpdchess)/launch/make_chess_table.launch"/>

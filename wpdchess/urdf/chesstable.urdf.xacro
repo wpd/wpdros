@@ -6,6 +6,10 @@
 
   <property name="piece_z" value="0.55" />
   <property name="pitch" value="0.05"/> <!-- 5cm pitch -->
+  <property name="piece_radius" value="0.01"/>
+  <property name="piece_length" value="0.05"/>
+  <property name="piece_mass"   value="0.005"/> <!-- MKS units => 5g -->
+
   <!-- row 1 location -->
   <property name="r1" value="${table_x-3.5*pitch}"/>
   <property name="r2" value="${table_x-2.5*pitch}"/>

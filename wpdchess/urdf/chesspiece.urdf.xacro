@@ -9,21 +9,27 @@
     </joint>
     <link name="${piecename}">
       <inertial>
-	<mass value="0.01" />
+	<mass value="${piece_mass}" />
 	<!-- center of mass (com) is defined w.r.t. link local coordinate system -->
 	<origin xyz="0 0 0.025" /> 
-	<inertia  ixx="0.0001" ixy="0.0"  ixz="0.0"  iyy="0.0001"  iyz="0.0"  izz="0.0001" />
+
+	<inertia  ixx="${(3*piece_radius*piece_radius + piece_length*piece_length)*piece_mass/12}"
+		  ixy="0"
+		  ixz="0"
+		  iyy="${(3*piece_radius*piece_radius + piece_length*piece_length)*piece_mass/12}"
+		  iyz="0"
+		  izz="${piece_radius*piece_radius*piece_mass/2}"/>
       </inertial>
       <visual>
 	<origin xyz="0 0 0.025" rpy="0 0 0" />
 	<geometry>
-	  <cylinder radius="0.01" length="0.05"/>
+	  <cylinder radius="${piece_radius}" length="${piece_length}"/>
 	</geometry>
       </visual>
       <collision>
 	<origin xyz="0 0 0.025" rpy="0 0 0" />
 	<geometry>
-	  <cylinder radius="0.01" length="0.05"/>
+	  <cylinder radius="${piece_radius}" length="${piece_length}"/>
 	</geometry>
       </collision>
     </link>
