@@ -12,7 +12,7 @@
   <!--<node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find pr2_tabletop_manipulation_gazebo_demo)/worlds/grasp.world" respawn="false" output="screen"/>
   -->
   <!-- Let's use empty world for now - it seems to start faster -->
-  <node name="gazebo" pkg="gazebo" type="gazebo" args="$(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
 
   <!-- send pr2 to param server -->
   <include file="$(find pr2_gazebo)/pr2.launch" />
