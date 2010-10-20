@@ -25,6 +25,7 @@
   <property name="cg" value="${table_y-2.5*pitch}"/>
   <property name="ch" value="${table_y-3.5*pitch}"/>
 
+<!--
   <xacro:chesspiece parent="table_top_link" piecename="wca" color="White" >
     <origin xyz="${r1} ${ca} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
@@ -88,8 +89,9 @@
   <xacro:chesspiece parent="table_top_link" piecename="wph" color="White" >
     <origin xyz="${r2} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
-
+-->
   <!-- Set up the black pieces -->
+<!--
   <xacro:chesspiece parent="table_top_link" piecename="bca" color="Black" >
     <origin xyz="${r8} ${ca} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
@@ -153,4 +155,5 @@
   <xacro:chesspiece parent="table_top_link" piecename="bph" color="Black" >
     <origin xyz="${r7} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
+-->
 </robot>
