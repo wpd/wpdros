@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('wpdchess')
+import roslib; roslib.load_manifest('wpdtb')
 import rospy
 import math
 
@@ -29,7 +29,7 @@ def movearm(side):
     goal = JointTrajectoryGoal()
     goal.trajectory.joint_names = [side+"_"+name+"_joint" for name in joint_names]
     goal.trajectory.points = []
-    positions = [[({'l':1, 'r':-1}[side]) * math.pi/4, 0, 0, 0, 0, 0, 0]]
+    positions = [[0, 0, 0, 0, 0, 0, 0]]
 #    positions = [[({'l':1, 'r':-1}[side]) * math.pi/4]]
     move_duration = 2.5
     for p, count in zip(positions, range(0,len(positions)+1)):
@@ -38,13 +38,14 @@ def movearm(side):
                                                             accelerations = [],
                                                             time_from_start = rospy.Duration((count+1) * move_duration)))
     goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.01)
-    print type(goal.trajectory.points), len(goal.trajectory.points), type(goal.trajectory.points[0])
+#    print type(goal.trajectory.points), len(goal.trajectory.points), type(goal.trajectory.points[0])
 #    return 0
     return ac.send_goal_and_wait(goal, rospy.Duration(30.0), rospy.Duration(5.0))
 def main():
     rospy.init_node("test2")
     rospy.loginfo("Moving arm")
     rospy.loginfo("result = " + str(movearm('l')))
+    rospy.loginfo("result = " + str(movearm('r')))
 
 if __name__ == '__main__':
   main()

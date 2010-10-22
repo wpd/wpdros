@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('wpdchess')
+import roslib; roslib.load_manifest('wpdtb')
 import rospy;
 
 # Brings in the SimpleActionClient

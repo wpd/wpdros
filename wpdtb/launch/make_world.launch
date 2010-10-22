@@ -19,6 +19,6 @@
   <!--<include file="$(find pr2_gazebo)/pr2_no_arms.launch" />-->
 
   <!-- spawn the chess table -->
-  <include file="$(find wpdchess)/launch/make_chess_table.launch"/>
+  <include file="$(find wpdtb)/launch/make_chess_table.launch"/>
 </launch>
 

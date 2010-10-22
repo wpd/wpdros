@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        name="chesstable">
   <include filename="$(find gazebo_worlds)/objects/table.urdf.xacro"/>
-  <include filename="$(find wpdchess)/urdf/chesspiece.urdf.xacro"/>
+  <include filename="$(find wpdtb)/urdf/chesspiece.urdf.xacro"/>
 
   <property name="piece_z" value="0.55" />
   <property name="pitch" value="0.05"/> <!-- 5cm pitch -->

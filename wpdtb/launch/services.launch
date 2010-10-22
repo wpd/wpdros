@@ -11,5 +11,5 @@ $ rosrun pr2_tuckarm tuck_arms.py -r t -l t -q
   -->
 
   <!-- launch the PR2 Tabletop Manipulation pipeline, our custom version -->
-  <include file="$(find wpdchess)/launch/pr2_tabletop_manipulation.launch"/>
+  <include file="$(find wpdtb)/launch/pr2_tabletop_manipulation.launch"/>
 </launch>

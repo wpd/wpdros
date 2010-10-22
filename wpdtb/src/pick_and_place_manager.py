@@ -38,7 +38,7 @@
 # specified rectangular regions in space
 
 import roslib
-roslib.load_manifest('pr2_pick_and_place_demos')
+roslib.load_manifest('wpdtb')
 import rospy
 from object_manipulation_msgs.msg import PickupAction, PickupGoal, PlaceAction, PlaceGoal, GripperTranslation
 from object_manipulation_msgs.srv import FindClusterBoundingBox, FindClusterBoundingBoxRequest

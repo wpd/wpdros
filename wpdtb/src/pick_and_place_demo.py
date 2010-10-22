@@ -38,7 +38,7 @@
 #them to the other, then switches sides
 
 import roslib
-roslib.load_manifest('wpdchess')
+roslib.load_manifest('wpdtb')
 import rospy
 from pr2_pick_and_place_demos.pick_and_place_manager import *
 
