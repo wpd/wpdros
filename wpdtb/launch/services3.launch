@@ -14,6 +14,6 @@ $ rosrun pr2_tuckarm tuck_arms.py -r t -l t -q
   <!--
   <include file="$(find wpdtb)/launch/pr2_tabletop_manipulation.launch"/>
   -->
-  <!-- launch the linematics solver node -->
+  <!-- launch the kinematics solver node -->
   <include file="$(find pr2_arm_kinematics)/launch/pr2_ik_rarm_node.launch"/>
 </launch>
