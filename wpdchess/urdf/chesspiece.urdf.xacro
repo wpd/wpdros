@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
   <xacro:macro name="chesspiece" params="parent piecename color *origin">
-    <joint name="${piecename}_joint}" type="floating">
+    <joint name="${piecename}_joint" type="floating">
       <insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${piecename}"/>

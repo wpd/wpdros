@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- start the tuck_arms action server !-->
+  <!-- naw, don't bother, just run
+
+$ rosrun pr2_tuckarm tuck_arms.py -r t -l t -q
+
+       from the command line. -->
+  <!--
+  <node name="tuck_arms_action_server" pkg="pr2_tuckarm" type="tuck_arms.py" output="screen"/>
+  -->
+
+  <!-- launch the PR2 Tabletop Manipulation pipeline, our custom version -->
+  <!--
+  <include file="$(find wpdchess)/launch/pr2_tabletop_manipulation.launch"/>
+  -->
+  <!-- launch the linematics solver node -->
+  <include file="$(find pr2_arm_kinematics)/launch/pr2_ik_rarm_node.launch"/>
+</launch>

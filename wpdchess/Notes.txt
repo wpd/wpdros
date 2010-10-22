@@ -1,0 +1,14 @@
+Some useful (perhaps) links:
+http://www.ros.org/wiki/pr2_controllers/Tutorials
+http://www.ros.org/wiki/pr2_controllers/Tutorials/Moving%20the%20gripper
+http://www.ros.org/wiki/pr2_controller_manager
+http://www.ros.org/wiki/AllTutorials
+http://www.ros.org/wiki/robot_mechanism_controllers
+http://www.ros.org/wiki/robot_mechanism_controllers/CartesianPoseController
+http://www.ros.org/wiki/pr2_controllers/Tutorials/Moving%20the%20arm%20using%20the%20Joint%20Trajectory%20Action
+http://www.ros.org/wiki/pr2_controllers/Tutorials/Moving%20the%20arm%20through%20a%20Cartesian%20pose%20trajectory
+http://www.ros.org/wiki/pr2_mechanism/Tutorials/Running%20a%20realtime%20Cartesian%20controller
+http://www.ros.org/wiki/pr2_mechanism/Tutorials/Writing%20a%20realtime%20Cartesian%20controller
+http://www.ros.org/wiki/arm_navigation/Tutorials
+http://www.ros.org/wiki/move_arm/Tutorials
+http://www.ros.org/wiki/pr2_kinematics/Tutorials
