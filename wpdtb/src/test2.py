@@ -18,7 +18,7 @@ joint_names = ["shoulder_pan",
                "wrist_roll" ]
 #joint_names = ["shoulder_pan"]
 
-def movearm(side):
+def movearm(side = 'r', positions = [[0, 0, 0, 0, 0, 0, 0]]):
     ac = actionlib.SimpleActionClient(side + "_arm_controller/joint_trajectory_action", JointTrajectoryAction)
 
     # Wait for joint client to connect with timeout
@@ -29,7 +29,7 @@ def movearm(side):
     goal = JointTrajectoryGoal()
     goal.trajectory.joint_names = [side+"_"+name+"_joint" for name in joint_names]
     goal.trajectory.points = []
-    positions = [[0, 0, 0, 0, 0, 0, 0]]
+#    positions = [[0, 0, math.pi, 0, 0, 0, 0]]
 #    positions = [[({'l':1, 'r':-1}[side]) * math.pi/4]]
     move_duration = 2.5
     for p, count in zip(positions, range(0,len(positions)+1)):
@@ -43,9 +43,9 @@ def movearm(side):
     return ac.send_goal_and_wait(goal, rospy.Duration(30.0), rospy.Duration(5.0))
 def main():
     rospy.init_node("test2")
-    rospy.loginfo("Moving arm")
-    rospy.loginfo("result = " + str(movearm('l')))
-    rospy.loginfo("result = " + str(movearm('r')))
+    rospy.loginfo("Moving arms")
+    rospy.loginfo("result = " + str(movearm('l', [[0, 0, 0, 0, math.pi, -.15, 0]])))
+    rospy.loginfo("result = " + str(movearm('r', [[0, 0, 0, 0, 0, 0, 0]])))
 
 if __name__ == '__main__':
   main()

@@ -2,14 +2,13 @@
 import roslib; roslib.load_manifest('wpdtb')
 import rospy
 import math
-import copy
 
 # Brings in the SimpleActionClient
 import actionlib
 from pr2_controllers_msgs.msg import *
 from trajectory_msgs.msg import *
 from kinematics_msgs.srv import *
-
+from sensor_msgs.msg import JointState
 # Joint names
 joint_names = ["shoulder_pan", 
                "shoulder_lift",
@@ -43,9 +42,16 @@ def movearm(side = 'r', positions = [[0, 0, 0, 0, 0, 0, 0]]):
 #    print type(goal.trajectory.points), len(goal.trajectory.points), type(goal.trajectory.points[0])
 #    return 0
     return ac.send_goal_and_wait(goal, rospy.Duration(30.0), rospy.Duration(5.0))
+joint_states = []
+def update_joint_positions(msg):
+    global joint_states
+    joint_states = msg.position[16:23]
+
 def main():
     rospy.init_node("test3")
     rospy.loginfo("waiting for services")
+    rospy.Subscriber("/joint_states", JointState, update_joint_positions)
+    rospy.sleep(0.2) # wait for joint positions
 
     ik_info_name="pr2_right_arm_kinematics/get_ik_solver_info"
     get_ik_name="pr2_right_arm_kinematics/get_ik"
@@ -65,9 +71,9 @@ def main():
     req.timeout = rospy.Duration(5.0)
     req.ik_request.ik_link_name = "r_wrist_roll_link"
     req.ik_request.pose_stamped.header.frame_id = "base_footprint"#"torso_lift_link"
-    req.ik_request.pose_stamped.pose.position.x = 0.725 # 0.805
-    req.ik_request.pose_stamped.pose.position.y = -0.175
-    req.ik_request.pose_stamped.pose.position.z = 1   # 0.55+0.1+fingertip
+    req.ik_request.pose_stamped.pose.position.x = 0.767 # 0.805
+    req.ik_request.pose_stamped.pose.position.y = -0.188 #-0.175
+    req.ik_request.pose_stamped.pose.position.z = 0.754 # 1   # 0.55+0.1+fingertip
 #    req.ik_request.pose_stamped.pose.position.x = 0.7
 #    req.ik_request.pose_stamped.pose.position.y = 0
 #    req.ik_request.pose_stamped.pose.position.z = 1
@@ -79,10 +85,14 @@ def main():
         ik_info.kinematic_solver_info.joint_names
 
 #    print ik_info.kinematic_solver_info.limits
-    for i in range(num_joints):
-        req.ik_request.ik_seed_state.joint_state.position.append((ik_info.kinematic_solver_info.limits[i].min_position + 
-                                                                  ik_info.kinematic_solver_info.limits[i].max_position)/2.0)
+    joint_snap = joint_states
+    print "Could initialize seed states with", joint_snap
 
+#    for i in range(num_joints):
+#        req.ik_request.ik_seed_state.joint_state.position.append((ik_info.kinematic_solver_info.limits[i].min_position + 
+#                                                                  ik_info.kinematic_solver_info.limits[i].max_position)/2.0)
+    req.ik_request.ik_seed_state.joint_state.position = \
+        [0, 0, -math.pi, 0, 0, -(math.pi/2-.1), 0]
     try:
         resp = get_ik_srv(req)
     except rospy.ServiceException, e:
