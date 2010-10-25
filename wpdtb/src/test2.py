@@ -9,11 +9,11 @@ from pr2_controllers_msgs.msg import *
 from trajectory_msgs.msg import *
 
 # Joint names
-joint_names = ["shoulder_pan", 
+joint_names = ["upper_arm_roll",
+               "shoulder_pan", 
                "shoulder_lift",
-               "upper_arm_roll",
-               "elbow_flex", 
                "forearm_roll",
+               "elbow_flex", 
                "wrist_flex", 
                "wrist_roll" ]
 #joint_names = ["shoulder_pan"]
@@ -44,8 +44,9 @@ def movearm(side = 'r', positions = [[0, 0, 0, 0, 0, 0, 0]]):
 def main():
     rospy.init_node("test2")
     rospy.loginfo("Moving arms")
-    rospy.loginfo("result = " + str(movearm('l', [[0, 0, 0, 0, math.pi, -.15, 0]])))
-    rospy.loginfo("result = " + str(movearm('r', [[0, 0, 0, 0, 0, 0, 0]])))
+#    rospy.loginfo("result = " + str(movearm('l', [[0, 0, 0, 0, math.pi, -.15, 0]])))
+#    rospy.loginfo("result = " + str(movearm('r', [[0, 0, 0, 0, 0, 0, 0]])))
+    rospy.loginfo("result = " + str(movearm('r', [[-math.pi, 0, 0, 0, -0.15, -math.pi/2+0.15, 0]])))
 
 if __name__ == '__main__':
   main()
