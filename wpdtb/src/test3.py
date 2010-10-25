@@ -50,8 +50,8 @@ def update_joint_positions(msg):
 def main():
     rospy.init_node("test3")
     rospy.loginfo("waiting for services")
-    rospy.Subscriber("/joint_states", JointState, update_joint_positions)
-    rospy.sleep(0.2) # wait for joint positions
+#    rospy.Subscriber("/joint_states", JointState, update_joint_positions)
+#    rospy.sleep(0.2) # wait for joint positions
 
     ik_info_name="pr2_right_arm_kinematics/get_ik_solver_info"
     get_ik_name="pr2_right_arm_kinematics/get_ik"
@@ -71,22 +71,25 @@ def main():
     req.timeout = rospy.Duration(5.0)
     req.ik_request.ik_link_name = "r_wrist_roll_link"
     req.ik_request.pose_stamped.header.frame_id = "base_footprint"#"torso_lift_link"
-    req.ik_request.pose_stamped.pose.position.x = 0.767 # 0.805
-    req.ik_request.pose_stamped.pose.position.y = -0.188 #-0.175
-    req.ik_request.pose_stamped.pose.position.z = 0.754 # 1   # 0.55+0.1+fingertip
-#    req.ik_request.pose_stamped.pose.position.x = 0.7
-#    req.ik_request.pose_stamped.pose.position.y = 0
-#    req.ik_request.pose_stamped.pose.position.z = 1
+#    req.ik_request.pose_stamped.pose.position.x = 0.767 # 0.805
+#    req.ik_request.pose_stamped.pose.position.y = -0.188 #-0.175
+#    req.ik_request.pose_stamped.pose.position.z = 0.754 # 1   # 0.55+0.1+fingertip
+    req.ik_request.pose_stamped.pose.position.x = \
+        -0.05+0.1+0.4+0.321*math.cos(-0.15)-.0001
+    req.ik_request.pose_stamped.pose.position.y = -0.188
+    req.ik_request.pose_stamped.pose.position.z = \
+        0.051+0.739675+0.011+0.321*math.sin(-0.15)
+
     req.ik_request.pose_stamped.pose.orientation.x = 0
-    req.ik_request.pose_stamped.pose.orientation.y = 0.707
+    req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
     req.ik_request.pose_stamped.pose.orientation.z = 0
-    req.ik_request.pose_stamped.pose.orientation.w = 0.707
+    req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
     req.ik_request.ik_seed_state.joint_state.name = \
         ik_info.kinematic_solver_info.joint_names
 
 #    print ik_info.kinematic_solver_info.limits
-    joint_snap = joint_states
-    print "Could initialize seed states with", joint_snap
+#    joint_snap = joint_states
+#    print "Could initialize seed states with", joint_snap
 
 #    for i in range(num_joints):
 #        req.ik_request.ik_seed_state.joint_state.position.append((ik_info.kinematic_solver_info.limits[i].min_position + 
