@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- send pr2 urdf to param server -->
+  <!--<include file="$(find pr2_description)/robots/upload_pr2.launch" />-->
+  <!-- send pr2 to param server -->
+  <param name="/use_sim_time" value="true" />
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
+  <include file="$(find pr2_gazebo)/pr2.launch" />
+
+  <!-- launch the kinematics solver node -->
+  <include file="$(find pr2_arm_kinematics)/launch/pr2_ik_rarm_node.launch"/>
+
+  <!-- Run my test script, exit when it's done -->
+  <node name="test5" pkg="wpdtb" type="test5.py" output="screen" required="true"/></launch>
