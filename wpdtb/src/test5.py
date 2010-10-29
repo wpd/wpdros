@@ -191,6 +191,20 @@ class PieceMoverActionServer:
         self.center_y = self.chessboard['center']['y']
         self.center_z = self.chesstable['z'] + self.chessboard['thickness']
 
+        # Set up for IK requests
+        self.req = GetPositionIKRequest()
+        self.req.timeout = rospy.Duration(5.0)
+        self.req.ik_request.ik_link_name = "r_wrist_roll_link"
+        self.req.ik_request.ik_seed_state.joint_state.name = self.joints
+        self.req.ik_request.ik_seed_state.joint_state.position = \
+            [0, 0, -math.pi, 0, 0, -math.pi/2, 0]
+
+        self.req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
+        self.req.ik_request.pose_stamped.pose.orientation.x = 0
+        self.req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
+        self.req.ik_request.pose_stamped.pose.orientation.z = 0
+
+
     def aim_head(self):
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
         client.wait_for_server()
@@ -227,7 +241,66 @@ class PieceMoverActionServer:
         goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.01)
         return ac.send_goal_and_wait(goal, rospy.Duration(30.0), rospy.Duration(5.0))
 
-    def compute_targets(self, frame_id):
+    def compute_target(self, x, y, z, frame_id = "base_footprint"):
+        self.req.ik_request.pose_stamped.header.frame_id = frame_id
+        self.req.ik_request.pose_stamped.pose.position.x = x
+        self.req.ik_request.pose_stamped.pose.position.y = y
+        self.req.ik_request.pose_stamped.pose.position.z = z
+
+        print "compute_target: [%5.3f, %5.3f, %5.3f]" % (x, y, z)
+
+        try:
+            resp = self.get_ik_srv(self.req)
+        except rospy.ServiceException, e:
+            print "get_ik_srv did not process request: %s" % str(e)
+            raise
+
+        if resp.error_code.val != resp.error_code.SUCCESS:
+            raise Exception("No IK Solulion -- error code %s" % str(resp.error_code))
+        return [resp.solution.joint_state.name,
+                resp.solution.joint_state.position]
+
+    def compute_targets(self):
+        gripper_z = 0.168
+        pitch = self.chessboard['pitch']
+
+        z_hover = gripper_z              + \
+            self.chesstable['z']         + \
+            self.chesstable['height']    + \
+            self.chessboard['thickness'] + \
+            self.chesspiece['length']    + \
+            0.01 # 1 cm above top of piece
+        self.hover_locs = {}
+
+        z_grasp = gripper_z              + \
+            self.chesstable['height']    + \
+            self.chesstable['z']         + \
+            self.chessboard['thickness'] + \
+            self.chesspiece['length'] / 2 # middle of piece
+        self.grasp_locs = {}
+
+        z_move = gripper_z               + \
+            self.chesstable['height']    + \
+            self.chesstable['z']         + \
+            self.chessboard['thickness'] + \
+            self.chesspiece['length']*1.5+ \
+            -.02 # move 2 cm above top of pieces
+        self.move_locs = {}
+
+
+        for i in range(8):
+            for j in range(8):
+                pos = 'abcdefgh'[i]+str(j+1)
+                x = self.center_x + (i-3.5)*pitch
+                y = self.center_y + (j-3.5)*pitch
+
+                self.hover_locs[pos] = self.compute_target(x, y, z_hover)
+                self.grasp_locs[pos] = self.compute_target(x, y, z_grasp)
+                self.move_locs[pos]  = self.compute_target(x, y, z_move)
+
+#        print self.hover
+
+    def old_compute_targets(self, frame_id):
         req = GetPositionIKRequest()
         req.timeout = rospy.Duration(5.0)
         req.ik_request.ik_link_name = "r_wrist_roll_link"
@@ -262,7 +335,7 @@ class PieceMoverActionServer:
 
         pitch = self.chessboard['pitch']
         self.hover = {}
-        gripper_z = 0 # 0.07 # guess for the moment
+        gripper_z = 0.168
 
         req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
         req.ik_request.pose_stamped.pose.orientation.x = 0
@@ -311,7 +384,8 @@ def main():
 #        print "done."
 
         # Compute the target locations relative to the base footprint
-        mover.compute_targets(frame_id)
+#        mover.old_compute_targets(frame_id)
+        mover.compute_targets()
     except Exception, e:
 #        print "Exception raised when playing with the mover: %s" % str(e)
         raise
