@@ -178,7 +178,7 @@ class PieceMoverActionServer:
 # The problem is, I can't rotate the elbow flex joint to -(pi/2+asin(...)).
 # It hits its soft limit of -2.121 
 
-        rospy.spin()
+#        rospy.spin()
         # Let's skip everything else for now, until I figure out
         # the reachability problem
 
@@ -263,13 +263,27 @@ class PieceMoverActionServer:
         pitch = self.chessboard['pitch']
         self.hover = {}
         gripper_z = 0 # 0.07 # guess for the moment
+
+        req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
+        req.ik_request.pose_stamped.pose.orientation.x = 0
+        req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
+        req.ik_request.pose_stamped.pose.orientation.z = 0
+
         for i in range(8):
             for j in range(8):
+                # req.ik_request.pose_stamped.pose.position.x = 0.767
+                # req.ik_request.pose_stamped.pose.position.y = -0.140
+                # req.ik_request.pose_stamped.pose.position.z = 0.802
                 req.ik_request.pose_stamped.pose.position.x = self.center_x + (i-3.5)*pitch
                 req.ik_request.pose_stamped.pose.position.y = self.center_y + (j-3.5)*pitch
                 req.ik_request.pose_stamped.pose.position.z = z_hover+gripper_z
 
-                print req.ik_request.pose_stamped.pose.position
+                print "(%d,%d): [%5.3f, %5.3f, %5.3f" % \
+                    (i, j,
+                     req.ik_request.pose_stamped.pose.position.x,
+                     req.ik_request.pose_stamped.pose.position.y,
+                     req.ik_request.pose_stamped.pose.position.z)
+                     
                 
                 try:
                     resp = self.get_ik_srv(req)
@@ -283,7 +297,7 @@ class PieceMoverActionServer:
                 self.hover[pos] = [resp.solution.joint_state.name,
                                    resp.solution.joint_state.position]
 
-        print self.hover
+#        print self.hover
 
 def main():
     rospy.init_node("test5")
@@ -302,8 +316,8 @@ def main():
 #        print "Exception raised when playing with the mover: %s" % str(e)
         raise
 if __name__ == '__main__':
-    rospy.sleep(30) # wait for the world to start
-
+    rospy.sleep(10) # wait for the world to start on a fast machine
+    rospy.sleep(20) # wait for the world to start on a slow machine
     main()
 
     # for the moment...

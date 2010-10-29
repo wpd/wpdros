@@ -7,7 +7,7 @@
   <!-- The following set of properties were extracted from 
        simulator_gazebo/gazebo_worlds/objects/table.urdf.xacro
     -->
-  <property name="table_height" value="0.55" />
+  <property name="table_height" value="0.6" />
   <property name="table_width" value="0.5" />
   <property name="table_depth" value="1.0" />
   <!-- to see something funny, try the following
@@ -15,8 +15,8 @@
   <property name="table_depth" value="0.5" />
   -->
   <property name="leg_radius" value="0.02" />
-  <property name="table_x" value="0.75" />
-  <property name="table_y" value="0.0" />
+  <property name="table_x" value="0.55" />
+  <property name="table_y" value="-0.188" />
   <property name="table_z" value="0.0" />
 
   <property name="table_top_thickness" value="0.05"/>

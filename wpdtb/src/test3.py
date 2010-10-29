@@ -23,7 +23,7 @@ def movearm(side = 'r', positions = [[0, 0, 0, 0, 0, 0, 0]]):
     ac = actionlib.SimpleActionClient(side + "_arm_controller/joint_trajectory_action", JointTrajectoryAction)
 
     # Wait for joint client to connect with timeout
-    if not ac.wait_for_server(rospy.Duration(30)):
+    if not ac.wait_for_server():
         rospy.logerr("timeout waiting for " + side + " arm joint trajectory action")
         return False
 
@@ -74,11 +74,9 @@ def main():
 #    req.ik_request.pose_stamped.pose.position.x = 0.767 # 0.805
 #    req.ik_request.pose_stamped.pose.position.y = -0.188 #-0.175
 #    req.ik_request.pose_stamped.pose.position.z = 0.754 # 1   # 0.55+0.1+fingertip
-    req.ik_request.pose_stamped.pose.position.x = \
-        -0.05+0.1+0.4*math.cos(0.354)
-    req.ik_request.pose_stamped.pose.position.y = -0.188
-    req.ik_request.pose_stamped.pose.position.z = \
-        0.051+0.739675+0.011+0.4*math.sin(0.354)-0.321
+    req.ik_request.pose_stamped.pose.position.x = 0.767
+    req.ik_request.pose_stamped.pose.position.y = -0.140
+    req.ik_request.pose_stamped.pose.position.z = 0.802
     print req.ik_request.pose_stamped.pose.position
 
     req.ik_request.pose_stamped.pose.orientation.x = 0
