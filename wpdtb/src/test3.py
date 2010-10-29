@@ -75,18 +75,18 @@ def main():
 #    req.ik_request.pose_stamped.pose.position.y = -0.188 #-0.175
 #    req.ik_request.pose_stamped.pose.position.z = 0.754 # 1   # 0.55+0.1+fingertip
     req.ik_request.pose_stamped.pose.position.x = \
-        -0.05+0.1+0.4+0.321*math.cos(-0.15) # -.0001
+        -0.05+0.1+0.4*math.cos(0.354)
     req.ik_request.pose_stamped.pose.position.y = -0.188
     req.ik_request.pose_stamped.pose.position.z = \
-        0.051+0.739675+0.011+0.321*math.sin(0.15)
+        0.051+0.739675+0.011+0.4*math.sin(0.354)-0.321
     print req.ik_request.pose_stamped.pose.position
 
     req.ik_request.pose_stamped.pose.orientation.x = 0
-#    req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
-    req.ik_request.pose_stamped.pose.orientation.y = 0
+    req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
+#    req.ik_request.pose_stamped.pose.orientation.y = 0
     req.ik_request.pose_stamped.pose.orientation.z = 0
-#    req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
-    req.ik_request.pose_stamped.pose.orientation.w = 1
+    req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
+#    req.ik_request.pose_stamped.pose.orientation.w = 1
     req.ik_request.ik_seed_state.joint_state.name = \
         ik_info.kinematic_solver_info.joint_names
 

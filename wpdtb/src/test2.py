@@ -8,7 +8,7 @@ import actionlib
 from pr2_controllers_msgs.msg import *
 from trajectory_msgs.msg import *
 
-# Joint names
+# Joint names, in order reported by /joint_states topic
 joint_names = ["upper_arm_roll",
                "shoulder_pan", 
                "shoulder_lift",
@@ -22,7 +22,7 @@ def movearm(side = 'r', positions = [[0, 0, 0, 0, 0, 0, 0]]):
     ac = actionlib.SimpleActionClient(side + "_arm_controller/joint_trajectory_action", JointTrajectoryAction)
 
     # Wait for joint client to connect with timeout
-    if not ac.wait_for_server(rospy.Duration(30)):
+    if not ac.wait_for_server(): # rospy.Duration(30)):
         rospy.logerr("timeout waiting for " + side + " arm joint trajectory action")
         return False
 
@@ -44,9 +44,24 @@ def movearm(side = 'r', positions = [[0, 0, 0, 0, 0, 0, 0]]):
 def main():
     rospy.init_node("test2")
     rospy.loginfo("Moving arms")
-#    rospy.loginfo("result = " + str(movearm('l', [[0, 0, 0, 0, math.pi, -.15, 0]])))
+    rospy.loginfo("result = " + str(movearm('l', [[0, math.pi/2, 0, 0, -0.10, -.15, 0]])))
 #    rospy.loginfo("result = " + str(movearm('r', [[0, 0, 0, 0, 0, 0, 0]])))
-    rospy.loginfo("result = " + str(movearm('r', [[-math.pi, 0, 0, 0, -0.15, -math.pi/2+0.15, 0]])))
+    rospy.loginfo("result = " + \
+                      str(movearm('r', [[-math.pi/2,	# upper_arm_roll
+                                          -.1,		# shoulder_pan
+                                          0, 		# shoulder_lift
+                                          0,		# forarm_roll
+                                          -(math.pi/2+.1),	# elbow_flex
+                                         -0.10,		# wrist_flex
+                                          0]])))	# wrist_roll
+
+                      # str(movearm('r', [[-math.pi/2,	# upper_arm_roll
+                      #                     0,		# shoulder_pan
+                      #                     0, 		# shoulder_lift
+                      #                     0,		# forarm_roll
+                      #                    -(math.pi/2),	# elbow_flex
+                      #                    -0.10,		# wrist_flex
+                      #                     0]])))	# wrist_roll
 
 if __name__ == '__main__':
   main()

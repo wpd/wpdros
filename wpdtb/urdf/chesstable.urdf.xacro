@@ -4,10 +4,27 @@
   <include filename="$(find gazebo_worlds)/objects/table.urdf.xacro"/>
   <include filename="$(find wpdtb)/urdf/chesspiece.urdf.xacro"/>
 
+  <!-- The following set of properties were extracted from 
+       simulator_gazebo/gazebo_worlds/objects/table.urdf.xacro
+    -->
+  <property name="table_height" value="0.55" />
+  <property name="table_width" value="0.5" />
+  <property name="table_depth" value="1.0" />
+  <!-- to see something funny, try the following
+  <property name="table_width" value="1.0" />
+  <property name="table_depth" value="0.5" />
+  -->
+  <property name="leg_radius" value="0.02" />
+  <property name="table_x" value="0.75" />
+  <property name="table_y" value="0.0" />
+  <property name="table_z" value="0.0" />
+
+  <property name="table_top_thickness" value="0.05"/>
+
   <property name="piece_z" value="0.55" />
   <property name="pitch" value="0.05"/> <!-- 5cm pitch -->
-  <property name="piece_radius" value="0.025"/>
-  <property name="piece_length" value="0.1"/>
+  <property name="piece_radius" value="0.005"/>
+  <property name="piece_length" value="0.05"/>
   <property name="piece_mass"   value="0.005"/> <!-- MKS units => 5g -->
 
   <!-- row 1 location -->
@@ -25,11 +42,12 @@
   <property name="cg" value="${table_y-2.5*pitch}"/>
   <property name="ch" value="${table_y-3.5*pitch}"/>
 
+<!--
   <xacro:chesspiece parent="table_top_link" piecename="wch" color="Black" >
     <origin xyz="${r1} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
+-->
 
-<!--
   <xacro:chesspiece parent="table_top_link" piecename="wca" color="White" >
     <origin xyz="${r1} ${ca} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
@@ -93,9 +111,8 @@
   <xacro:chesspiece parent="table_top_link" piecename="wph" color="White" >
     <origin xyz="${r2} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
--->
+
   <!-- Set up the black pieces -->
-<!--
   <xacro:chesspiece parent="table_top_link" piecename="bca" color="Black" >
     <origin xyz="${r8} ${ca} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
@@ -159,5 +176,4 @@
   <xacro:chesspiece parent="table_top_link" piecename="bph" color="Black" >
     <origin xyz="${r7} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
--->
 </robot>
