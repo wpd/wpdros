@@ -7,9 +7,9 @@
   <!-- The following set of properties were extracted from 
        simulator_gazebo/gazebo_worlds/objects/table.urdf.xacro
     -->
-  <property name="table_height" value="0.2" />
+  <property name="table_height" value="0.4" />
   <property name="table_width" value="0.5" />
-  <property name="table_depth" value="1.0" />
+  <property name="table_depth" value="2.0" />
   <!-- to see something funny, try the following
   <property name="table_width" value="1.0" />
   <property name="table_depth" value="0.5" />
@@ -21,7 +21,7 @@
 
   <property name="table_top_thickness" value="0.05"/>
 
-  <property name="piece_z" value="0.55" />
+  <property name="piece_z" value="${table_z+table_height}" />
   <property name="pitch" value="0.05"/> <!-- 5cm pitch -->
   <property name="piece_radius" value="0.005"/>
   <property name="piece_length" value="0.05"/>
