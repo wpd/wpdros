@@ -2,6 +2,8 @@
 import roslib; roslib.load_manifest('wpdtb')
 import rospy
 import math
+import os
+#import readline
 
 import actionlib
 from kinematics_msgs.srv import *
@@ -38,6 +40,21 @@ class PieceMoverActionServer:
         self.num_joints = len(self.joints)
 
         print self.joints
+
+        self.ac = {}
+        self.ac['l'] = \
+            actionlib.SimpleActionClient("l_arm_controller/joint_trajectory_action",
+                                         JointTrajectoryAction)
+        self.ac['r'] = \
+            actionlib.SimpleActionClient("r_arm_controller/joint_trajectory_action",
+                                         JointTrajectoryAction)
+
+        # Wait for joint clients to connect
+        if not self.ac['l'].wait_for_server():
+            raise Exception("Timout waiting for l_arm_controller")
+
+        if not self.ac['r'].wait_for_server():
+            raise Exception("Timout waiting for r_arm_controller")
 
 # Translation from the URDF file:
 #
@@ -204,6 +221,13 @@ class PieceMoverActionServer:
         self.req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
         self.req.ik_request.pose_stamped.pose.orientation.z = 0
 
+        # Set up for opening and closoing the gripper
+        self.open_gripper_cmd = Pr2GripperCommand()
+        self.open_gripper_cmd.position = 2*self.chesspiece['radius']+0.01
+        self.open_gripper_cmd.max_effort = 100
+        self.gripper_pub = rospy.Publisher("r_gripper_controller/command",
+                                           Pr2GripperCommand,
+                                           latch=True)
 
     def aim_head(self):
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
@@ -220,26 +244,23 @@ class PieceMoverActionServer:
         client.wait_for_result()
 
     def move_arm_out_of_the_way(self, side='l'):
-        ac = actionlib.SimpleActionClient(side + "_arm_controller/joint_trajectory_action", JointTrajectoryAction)
+        joints = [side+"_"+name+"_joint" for name in joint_names]
+        reflect = {'l':1, 'r':-1}[side]
+        positions   = [[reflect*math.pi/2, math.pi/4, reflect*math.pi/2, -math.pi, 0, 0, 0]]
+        return self.move_arm(side, joints, positions)
 
-        # Wait for joint client to connect with timeout
-        if not ac.wait_for_server(rospy.Duration(30)):
-            rospy.logerr("timeout waiting for " + side + " arm joint trajectory action")
-            return False
-
+    def move_arm(self, side, joints, positions, duration = 2.5):
         goal = JointTrajectoryGoal()
-        goal.trajectory.joint_names = [side+"_"+name+"_joint" for name in joint_names]
+        goal.trajectory.joint_names = joints
         goal.trajectory.points = []
-        positions = [[({'l':1, 'r':-1}[side]) * math.pi/4, 0, 0, 0, 0, 0, 0]]
 
-        move_duration = 2.5
         for p, count in zip(positions, range(0,len(positions)+1)):
             goal.trajectory.points.append(JointTrajectoryPoint( positions = p,
                                                                 velocities = [],
                                                                 accelerations = [],
-                                                                time_from_start = rospy.Duration((count+1) * move_duration)))
+                                                                time_from_start = rospy.Duration((count+1) * duration)))
         goal.trajectory.header.stamp = rospy.get_rostime() + rospy.Duration(0.01)
-        return ac.send_goal_and_wait(goal, rospy.Duration(30.0), rospy.Duration(5.0))
+        return self.ac[side].send_goal_and_wait(goal, rospy.Duration(30.0), rospy.Duration(5.0))
 
     def compute_target(self, x, y, z, frame_id = "base_footprint"):
         self.req.ik_request.pose_stamped.header.frame_id = frame_id
@@ -247,7 +268,7 @@ class PieceMoverActionServer:
         self.req.ik_request.pose_stamped.pose.position.y = y
         self.req.ik_request.pose_stamped.pose.position.z = z
 
-        print "compute_target: [%5.3f, %5.3f, %5.3f]" % (x, y, z)
+#        print "compute_target: [%5.3f, %5.3f, %5.3f]" % (x, y, z)
 
         try:
             resp = self.get_ik_srv(self.req)
@@ -256,7 +277,7 @@ class PieceMoverActionServer:
             raise
 
         if resp.error_code.val != resp.error_code.SUCCESS:
-            raise Exception("No IK Solulion -- error code %s" % str(resp.error_code))
+            raise Exception("No IK Solution -- error code %s" % str(resp.error_code))
         return [resp.solution.joint_state.name,
                 resp.solution.joint_state.position]
 
@@ -290,108 +311,55 @@ class PieceMoverActionServer:
 
         for i in range(8):
             for j in range(8):
-                pos = 'abcdefgh'[i]+str(j+1)
+                pos = 'abcdefgh'[j]+str(i+1)
                 x = self.center_x + (i-3.5)*pitch
-                y = self.center_y + (j-3.5)*pitch
+                y = self.center_y - (j-3.5)*pitch
 
                 self.hover_locs[pos] = self.compute_target(x, y, z_hover)
                 self.grasp_locs[pos] = self.compute_target(x, y, z_grasp)
                 self.move_locs[pos]  = self.compute_target(x, y, z_move)
 
-#        print self.hover
+    def hover_over(self, pos):
+        loc = self.move_locs[pos]
+        print "move_loc=", loc
+        print self.move_arm('r', loc[0], [loc[1]])
 
-    def old_compute_targets(self, frame_id):
-        req = GetPositionIKRequest()
-        req.timeout = rospy.Duration(5.0)
-        req.ik_request.ik_link_name = "r_wrist_roll_link"
-        req.ik_request.pose_stamped.header.frame_id = frame_id
-        # Seed IK with the arm reaching over the table
-        req.ik_request.ik_seed_state.joint_state.name = \
-            self.joints
-        req.ik_request.ik_seed_state.joint_state.position = \
-            [0, 0, -math.pi, 0, 0, -math.pi/2, 0]
+        loc = self.hover_locs[pos]
+        print "hover_loc=", loc
+        return self.move_arm('r', loc[0], [loc[1]])
 
-        self.hover_locs = {}
-
-        z_hover = \
-            self.chesstable['z']         + \
-            self.chesstable['height']    + \
-            self.chessboard['thickness'] + \
-            self.chesspiece['length']    + \
-            0.01 # 1 cm above top of piece
-
-        z_grasp = \
-            self.chesstable['height']    + \
-            self.chesstable['z']         + \
-            self.chessboard['thickness'] + \
-            self.chesspiece['length'] / 2 # middle of piece
-
-        z_move = \
-            self.chesstable['height']    + \
-            self.chesstable['z']         + \
-            self.chessboard['thickness'] + \
-            self.chesspiece['length']*1.5+ \
-            -.02 # move 2 cm above top of pieces
-
-        pitch = self.chessboard['pitch']
-        self.hover = {}
-        gripper_z = 0.168
-
-        req.ik_request.pose_stamped.pose.orientation.w = math.sqrt(2.0)/2.0
-        req.ik_request.pose_stamped.pose.orientation.x = 0
-        req.ik_request.pose_stamped.pose.orientation.y = math.sqrt(2.0)/2.0
-        req.ik_request.pose_stamped.pose.orientation.z = 0
-
-        for i in range(8):
-            for j in range(8):
-                # req.ik_request.pose_stamped.pose.position.x = 0.767
-                # req.ik_request.pose_stamped.pose.position.y = -0.140
-                # req.ik_request.pose_stamped.pose.position.z = 0.802
-                req.ik_request.pose_stamped.pose.position.x = self.center_x + (i-3.5)*pitch
-                req.ik_request.pose_stamped.pose.position.y = self.center_y + (j-3.5)*pitch
-                req.ik_request.pose_stamped.pose.position.z = z_hover+gripper_z
-
-                print "(%d,%d): [%5.3f, %5.3f, %5.3f" % \
-                    (i, j,
-                     req.ik_request.pose_stamped.pose.position.x,
-                     req.ik_request.pose_stamped.pose.position.y,
-                     req.ik_request.pose_stamped.pose.position.z)
-                     
-                
-                try:
-                    resp = self.get_ik_srv(req)
-                except rospy.ServiceException, e:
-                    print "get_ik_srv did not process request: %s" % str(e)
-                    raise
-
-                if resp.error_code.val != resp.error_code.SUCCESS:
-                    raise Exception("No IK Solulion -- error code %s" % str(resp.error_code))
-                pos = 'abcdefgh'[i]+str(j+1)
-                self.hover[pos] = [resp.solution.joint_state.name,
-                                   resp.solution.joint_state.position]
-
-#        print self.hover
+    def open_gripper(self):
+        result = self.gripper_pub.publish(self.open_gripper_cmd)
+        print "result of pub.publish...", result
 
 def main():
     rospy.init_node("test5")
     frame_id = "base_footprint"
+    print "Computing targets..."
     try:
         mover = PieceMoverActionServer("test5")
-#        print "Pointing head..."
-#        mover.aim_head()
-#        print "done.  Moving arm out of the way"
-#        mover.move_arm_out_of_the_way()
-#        print "done."
-
-        # Compute the target locations relative to the base footprint
-#        mover.old_compute_targets(frame_id)
         mover.compute_targets()
     except Exception, e:
 #        print "Exception raised when playing with the mover: %s" % str(e)
         raise
+
+    print "Targets computed, pointing head..."
+    mover.aim_head()
+    print "..done.  Moving arm out of the way..."
+    mover.move_arm_out_of_the_way()
+    mover.move_arm_out_of_the_way('r')
+    print "...done."
+
+    from_pos = raw_input("Select piece location to move from > ")
+    print "Moving to location", from_pos, "..."
+    mover.hover_over(from_pos)
+    print "...done.  Opening gripper..."
+    mover.open_gripper()
+    print "...done."
+
 if __name__ == '__main__':
-    rospy.sleep(10) # wait for the world to start on a fast machine
-    rospy.sleep(20) # wait for the world to start on a slow machine
+    sleep_dur = int(os.getenv("SLEEP_DUR", 30))
+    rospy.sleep(sleep_dur) # wait for the world to start
     main()
 
     # for the moment...
