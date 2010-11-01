@@ -20,13 +20,14 @@ joint_names = ["shoulder_pan",
 
 class PieceMoverActionServer:
     # We're not really a server yet, but we'll get there eventually
-    def __init__(self, node_name, side='right'):
+    def __init__(self, node_name, side='r'):
         self.node_name = node_name
-
+        self.side = side
+        side_name = 'right' if (side == 'r') else 'left'
         rospy.loginfo("waiting for services")
 
-        ik_info_name="pr2_"+side+"_arm_kinematics/get_ik_solver_info"
-        get_ik_name ="pr2_"+side+"_arm_kinematics/get_ik"
+        ik_info_name="pr2_"+side_name+"_arm_kinematics/get_ik_solver_info"
+        get_ik_name ="pr2_"+side_name+"_arm_kinematics/get_ik"
 
         rospy.wait_for_service(ik_info_name)
         rospy.wait_for_service(get_ik_name)
@@ -322,11 +323,18 @@ class PieceMoverActionServer:
     def hover_over(self, pos):
         loc = self.move_locs[pos]
         print "move_loc=", loc
-        print self.move_arm('r', loc[0], [loc[1]])
-
-        loc = self.hover_locs[pos]
-        print "hover_loc=", loc
-        return self.move_arm('r', loc[0], [loc[1]])
+        arm_joints,arm_up_poses = self.move_locs[pos]
+        arm_up_poses = list(arm_up_poses) # convert from tuple to list
+        shoulder_lift_idx = arm_joints.index(self.side + "_shoulder_lift_joint")
+        arm_up_poses[shoulder_lift_idx] = -math.pi/2
+        print shoulder_lift_idx, arm_joints, arm_up_poses
+        print self.move_locs[pos]
+        print self.hover_locs[pos]
+        return self.move_arm(self.side,
+                             arm_joints,
+                             [arm_up_poses,
+                              self.move_locs[pos][1],
+                              self.hover_locs[pos][1]])
 
     def open_gripper(self):
         result = self.gripper_pub.publish(self.open_gripper_cmd)
