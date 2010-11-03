@@ -223,12 +223,17 @@ class PieceMoverActionServer:
         self.req.ik_request.pose_stamped.pose.orientation.z = 0
 
         # Set up for opening and closoing the gripper
-        self.open_gripper_cmd = Pr2GripperCommand()
-        self.open_gripper_cmd.position = 2*self.chesspiece['radius']+0.01
-        self.open_gripper_cmd.max_effort = 100
         self.gripper_pub = rospy.Publisher("r_gripper_controller/command",
                                            Pr2GripperCommand,
                                            latch=True)
+
+        self.open_gripper_cmd = Pr2GripperCommand()
+        self.open_gripper_cmd.position = 2*self.chesspiece['radius']+0.01
+        self.open_gripper_cmd.max_effort = 100
+
+        self.close_gripper_cmd = Pr2GripperCommand()
+        self.close_gripper_cmd.position = 2*self.chesspiece['radius']-0.1
+        self.close_gripper_cmd.max_effort = 10
 
     def aim_head(self):
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
@@ -283,7 +288,13 @@ class PieceMoverActionServer:
                 resp.solution.joint_state.position]
 
     def compute_targets(self):
-        gripper_z = 0.168
+#        gripper_z = 0.18 + 0.02# 0.18 is the offset to the r_gripper_tool_frame # 0.168 
+        # 0.18 is offset from r_gripper_palm_link (== r_wrist_roll_link) to
+        # the r_gripper_tool_frame.  For the moment, we're assuming that
+        # the r_gripper_tool_frame at the center of the finger tips.  I
+        # measured the finger tips to be about 4cm long (3.8cm).  So we
+        # add 2cm to the offset to get to the tip of the finger tips.
+        gripper_z = 0.18 + 0.02
         pitch = self.chessboard['pitch']
 
         z_hover = gripper_z              + \
@@ -291,14 +302,17 @@ class PieceMoverActionServer:
             self.chesstable['height']    + \
             self.chessboard['thickness'] + \
             self.chesspiece['length']    + \
-            0.01 # 1 cm above top of piece
+            0.02 # 2 cm above top of piece
+        print "z_hover =", z_hover, " ->", z_hover - gripper_z
         self.hover_locs = {}
 
         z_grasp = gripper_z              + \
             self.chesstable['height']    + \
             self.chesstable['z']         + \
             self.chessboard['thickness'] + \
-            self.chesspiece['length'] / 2 # middle of piece
+            self.chesspiece['length']    - \
+            0.01 # grasp 1cm below the tip of the piece
+        print "z_grasp =", z_grasp, " ->", z_grasp - gripper_z
         self.grasp_locs = {}
 
         z_move = gripper_z               + \
@@ -307,6 +321,7 @@ class PieceMoverActionServer:
             self.chessboard['thickness'] + \
             self.chesspiece['length']*1.5+ \
             .02 # move 2 cm above top of pieces
+        print "z_move =", z_move, " ->", z_move - gripper_z
         self.move_locs = {}
 
 
@@ -322,23 +337,31 @@ class PieceMoverActionServer:
 
     def hover_over(self, pos):
         loc = self.move_locs[pos]
-        print "move_loc=", loc
+#        print "move_loc=", loc
         arm_joints,arm_up_poses = self.move_locs[pos]
         arm_up_poses = list(arm_up_poses) # convert from tuple to list
         shoulder_lift_idx = arm_joints.index(self.side + "_shoulder_lift_joint")
         arm_up_poses[shoulder_lift_idx] = -math.pi/2
-        print shoulder_lift_idx, arm_joints, arm_up_poses
-        print self.move_locs[pos]
-        print self.hover_locs[pos]
+#        print shoulder_lift_idx, arm_joints, arm_up_poses
+#        print self.move_locs[pos]
+#        print self.hover_locs[pos]
         return self.move_arm(self.side,
                              arm_joints,
                              [arm_up_poses,
-                              self.move_locs[pos][1],
-                              self.hover_locs[pos][1]])
+                              self.move_locs[pos][1]])
+#                              self.hover_locs[pos][1]])
 
     def open_gripper(self):
         result = self.gripper_pub.publish(self.open_gripper_cmd)
         print "result of pub.publish...", result
+
+    def grasp(self, pos):
+        loc = self.grasp_locs[pos]
+        self.move_arm(self.side, loc[0], [loc[1]])
+        raw_input("Ready to close gripper... please press enter...")
+        self.gripper_pub.publish(self.close_gripper_cmd)
+        loc = self.move_locs[pos]
+        self.move_arm(self.side, loc[0], [loc[1]])
 
 def main():
     rospy.init_node("test5")
@@ -353,7 +376,7 @@ def main():
 
     print "Targets computed, pointing head..."
     mover.aim_head()
-    print "..done.  Moving arm out of the way..."
+    print "..done.  Moving arms out of the way..."
     mover.move_arm_out_of_the_way()
     mover.move_arm_out_of_the_way('r')
     print "...done."
@@ -363,6 +386,8 @@ def main():
     mover.hover_over(from_pos)
     print "...done.  Opening gripper..."
     mover.open_gripper()
+    print "...done.  Grasping piece..."
+    mover.grasp(from_pos)
     print "...done."
 
 if __name__ == '__main__':
