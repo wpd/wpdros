@@ -306,7 +306,7 @@ class PieceMoverActionServer:
             self.chesstable['z']         + \
             self.chessboard['thickness'] + \
             self.chesspiece['length']*1.5+ \
-            -.02 # move 2 cm above top of pieces
+            .02 # move 2 cm above top of pieces
         self.move_locs = {}
 
 

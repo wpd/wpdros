@@ -10,19 +10,15 @@
   <property name="table_height" value="0.4" />
   <property name="table_width" value="0.5" />
   <property name="table_depth" value="2.0" />
-  <!-- to see something funny, try the following
-  <property name="table_width" value="1.0" />
-  <property name="table_depth" value="0.5" />
-  -->
-  <property name="leg_radius" value="0.02" />
-  <property name="table_x" value="0.50" />
+  <property name="table_x" value="0.52" />
   <property name="table_y" value="-0.188" />
   <property name="table_z" value="0.0" />
 
+  <property name="leg_radius" value="0.02" />
   <property name="table_top_thickness" value="0.05"/>
 
   <property name="piece_z" value="${table_z+table_height}" />
-  <property name="pitch" value="0.05"/> <!-- 5cm pitch -->
+  <property name="pitch" value="0.04"/> <!-- 4cm pitch -->
   <property name="piece_radius" value="0.005"/>
   <property name="piece_length" value="0.05"/>
   <property name="piece_mass"   value="0.005"/> <!-- MKS units => 5g -->

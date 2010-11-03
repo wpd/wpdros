@@ -2,7 +2,7 @@ chesstable:
   height: 0.4
   width: 0.5
   depth: 2.0
-  x: 0.50
+  x: 0.52
   y: -0.188
   z: 0.0
   top_thickness: 0.05
@@ -10,10 +10,10 @@ chesstable:
 
 chessboard:
   center:
-    x: 0.50
+    x: 0.52
     y: -0.188
   thickness: 0.0
-  pitch: 0.05
+  pitch: 0.04
 
 chesspiece:
   length: 0.05
