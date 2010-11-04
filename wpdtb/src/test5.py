@@ -233,7 +233,7 @@ class PieceMoverActionServer:
 
         self.close_gripper_cmd = Pr2GripperCommand()
         self.close_gripper_cmd.position = 2*self.chesspiece['radius']-0.1
-        self.close_gripper_cmd.max_effort = 20
+        self.close_gripper_cmd.max_effort = 10
 
     def aim_head(self):
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
@@ -253,9 +253,9 @@ class PieceMoverActionServer:
         joints = [side+"_"+name+"_joint" for name in joint_names]
         reflect = {'l':1, 'r':-1}[side]
         positions   = [[reflect*math.pi/2, math.pi/4, reflect*math.pi/2, -math.pi, 0, 0, 0]]
-        return self.move_arm(side, joints, positions)
+        return self.move_arm(side, joints, positions, 2.5)
 
-    def move_arm(self, side, joints, positions, duration = 2.5):
+    def move_arm(self, side, joints, positions, duration):
         goal = JointTrajectoryGoal()
         goal.trajectory.joint_names = joints
         goal.trajectory.points = []
@@ -335,17 +335,15 @@ class PieceMoverActionServer:
                 self.move_locs[pos]  = self.compute_target(x, y, z_move)
 
     def hover_over(self, pos):
-        loc = self.move_locs[pos]
-#        print "move_loc=", loc
         arm_joints,arm_up_poses = self.move_locs[pos]
         arm_up_poses = list(arm_up_poses) # convert from tuple to list
         shoulder_lift_idx = arm_joints.index(self.side + "_shoulder_lift_joint")
         arm_up_poses[shoulder_lift_idx] = -math.pi/2
-
-        return self.move_arm(self.side,
-                             arm_joints,
-                             [arm_up_poses,
-                              self.move_locs[pos][1]])
+        self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
+        loc = self.move_locs[pos]
+        self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        # Allow time for the arm to settle
+        rospy.sleep(0.5)
 
     def open_gripper(self):
         self.gripper_pub.publish(self.open_gripper_cmd)
@@ -353,18 +351,21 @@ class PieceMoverActionServer:
 
     def grasp(self, pos):
         loc = self.grasp_locs[pos]
-        self.move_arm(self.side, loc[0], [loc[1]])
+        self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        rospy.sleep(0.5) # settling time
 #        raw_input("Ready to close gripper... please press enter...")
         self.gripper_pub.publish(self.close_gripper_cmd)
         loc = self.move_locs[pos]
-        self.move_arm(self.side, loc[0], [loc[1]])
+        self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        rospy.sleep(0.5) # wait for things to settle
 
     def place(self, pos):
         loc = self.move_locs[pos]
-        self.move_arm(self.side, loc[0], [loc[1]])
-
+        self.move_arm(self.side, loc[0], [loc[1]], 2.5)
+        rospy.sleep(1) # settling time
         loc = self.grasp_locs[pos]
-        self.move_arm(self.side, loc[0], [loc[1]])
+        self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        rospy.sleep(0.5) # settling time
 
 #        raw_input("Ready to open gripper... please press enter...")
         self.gripper_pub.publish(self.open_gripper_cmd)
@@ -378,7 +379,7 @@ class PieceMoverActionServer:
             arm_up_poses[shoulder_pan_idx] = -math.pi/2
         else:
             arm_up_poses[shoulder_pan_idx] =  math.pi/2
-        self.move_arm(self.side, arm_joints, [arm_up_poses])
+        self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
 
 
 def main():
