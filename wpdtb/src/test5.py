@@ -288,7 +288,6 @@ class PieceMoverActionServer:
                 resp.solution.joint_state.position]
 
     def compute_targets(self):
-#        gripper_z = 0.18 + 0.02# 0.18 is the offset to the r_gripper_tool_frame # 0.168 
         # 0.18 is offset from r_gripper_palm_link (== r_wrist_roll_link) to
         # the r_gripper_tool_frame.  For the moment, we're assuming that
         # the r_gripper_tool_frame at the center of the finger tips.  I
@@ -303,7 +302,7 @@ class PieceMoverActionServer:
             self.chessboard['thickness'] + \
             self.chesspiece['length']    + \
             0.02 # 2 cm above top of piece
-        print "z_hover =", z_hover, " ->", z_hover - gripper_z
+#        print "z_hover =", z_hover, " ->", z_hover - gripper_z
         self.hover_locs = {}
 
         z_grasp = gripper_z              + \
@@ -312,7 +311,7 @@ class PieceMoverActionServer:
             self.chessboard['thickness'] + \
             self.chesspiece['length']    - \
             0.01 # grasp 1cm below the tip of the piece
-        print "z_grasp =", z_grasp, " ->", z_grasp - gripper_z
+#        print "z_grasp =", z_grasp, " ->", z_grasp - gripper_z
         self.grasp_locs = {}
 
         z_move = gripper_z               + \
@@ -321,7 +320,7 @@ class PieceMoverActionServer:
             self.chessboard['thickness'] + \
             self.chesspiece['length']*1.5+ \
             .02 # move 2 cm above top of pieces
-        print "z_move =", z_move, " ->", z_move - gripper_z
+#        print "z_move =", z_move, " ->", z_move - gripper_z
         self.move_locs = {}
 
 
@@ -342,14 +341,11 @@ class PieceMoverActionServer:
         arm_up_poses = list(arm_up_poses) # convert from tuple to list
         shoulder_lift_idx = arm_joints.index(self.side + "_shoulder_lift_joint")
         arm_up_poses[shoulder_lift_idx] = -math.pi/2
-#        print shoulder_lift_idx, arm_joints, arm_up_poses
-#        print self.move_locs[pos]
-#        print self.hover_locs[pos]
+
         return self.move_arm(self.side,
                              arm_joints,
                              [arm_up_poses,
                               self.move_locs[pos][1]])
-#                              self.hover_locs[pos][1]])
 
     def open_gripper(self):
         result = self.gripper_pub.publish(self.open_gripper_cmd)
@@ -362,6 +358,17 @@ class PieceMoverActionServer:
         self.gripper_pub.publish(self.close_gripper_cmd)
         loc = self.move_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]])
+
+    def place(self, pos):
+        loc = self.move_locs[pos]
+        self.move_arm(self.side, loc[0], [loc[1]])
+
+        loc = self.grasp_locs[pos]
+        self.move_arm(self.side, loc[0], [loc[1]])
+
+        raw_input("Ready to open gripper... please press enter...")
+        self.gripper_pub.publish(self.open_gripper_cmd)
+
 
 def main():
     rospy.init_node("test5")
@@ -381,14 +388,31 @@ def main():
     mover.move_arm_out_of_the_way('r')
     print "...done."
 
-    from_pos = raw_input("Select piece location to move from > ")
-    print "Moving to location", from_pos, "..."
-    mover.hover_over(from_pos)
-    print "...done.  Opening gripper..."
-    mover.open_gripper()
-    print "...done.  Grasping piece..."
-    mover.grasp(from_pos)
-    print "...done."
+    while not rospy.is_shutdown():
+        while True:
+            from_pos = raw_input("Select piece location to move from > ")
+            if from_pos in mover.grasp_locs:
+                break
+        while True:
+            to_pos   = raw_input("Select piece location to move to   > ")
+            if to_pos in mover.grasp_locs:
+                break
+
+        print "Moving to location", from_pos, "..."
+        mover.hover_over(from_pos)
+        print "...done.  Opening gripper..."
+        mover.open_gripper()
+        print "...done.  Grasping piece..."
+        mover.grasp(from_pos)
+        print "...done.  Moving to location", to_pos, "..."
+        mover.hover_over(to_pos)
+        print "...done.  Placing piece..."
+        mover.place(to_pos)
+        print "...done.  Moving arm out of the way..."
+        mover.hover_over(to_pos);
+        mover.move_arm_out_of_the_way('r')
+        print "...done."
+
 
 if __name__ == '__main__':
     sleep_dur = int(os.getenv("SLEEP_DUR", 30))
