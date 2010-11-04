@@ -40,7 +40,7 @@ class PieceMoverActionServer:
         self.joints = self.ik_info.kinematic_solver_info.joint_names
         self.num_joints = len(self.joints)
 
-        print self.joints
+#        print self.joints
 
         self.ac = {}
         self.ac['l'] = \
@@ -233,7 +233,7 @@ class PieceMoverActionServer:
 
         self.close_gripper_cmd = Pr2GripperCommand()
         self.close_gripper_cmd.position = 2*self.chesspiece['radius']-0.1
-        self.close_gripper_cmd.max_effort = 10
+        self.close_gripper_cmd.max_effort = 20
 
     def aim_head(self):
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
@@ -348,13 +348,13 @@ class PieceMoverActionServer:
                               self.move_locs[pos][1]])
 
     def open_gripper(self):
-        result = self.gripper_pub.publish(self.open_gripper_cmd)
-        print "result of pub.publish...", result
+        self.gripper_pub.publish(self.open_gripper_cmd)
+        rospy.sleep(.5) # Wait for gripper to open
 
     def grasp(self, pos):
         loc = self.grasp_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]])
-        raw_input("Ready to close gripper... please press enter...")
+#        raw_input("Ready to close gripper... please press enter...")
         self.gripper_pub.publish(self.close_gripper_cmd)
         loc = self.move_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]])
@@ -366,8 +366,19 @@ class PieceMoverActionServer:
         loc = self.grasp_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]])
 
-        raw_input("Ready to open gripper... please press enter...")
+#        raw_input("Ready to open gripper... please press enter...")
         self.gripper_pub.publish(self.open_gripper_cmd)
+
+    def arm_at_rest(self, pos):
+        arm_joints,arm_up_poses = self.move_locs[pos]
+        self.move_arm(self.side, arm_joints, [arm_up_poses], 1.0)
+        arm_up_poses = list(arm_up_poses) # convert from tuple to list
+        shoulder_pan_idx = arm_joints.index(self.side + "_shoulder_pan_joint")
+        if self.side == 'r':
+            arm_up_poses[shoulder_pan_idx] = -math.pi/2
+        else:
+            arm_up_poses[shoulder_pan_idx] =  math.pi/2
+        self.move_arm(self.side, arm_joints, [arm_up_poses])
 
 
 def main():
@@ -409,8 +420,7 @@ def main():
         print "...done.  Placing piece..."
         mover.place(to_pos)
         print "...done.  Moving arm out of the way..."
-        mover.hover_over(to_pos);
-        mover.move_arm_out_of_the_way('r')
+        mover.arm_at_rest(to_pos);
         print "...done."
 
 
