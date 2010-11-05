@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="table_description" command="$(find xacro)/xacro.py '$(find wpdtb)/urdf/chesstable.urdf.xacro'" />
+  <node name="spawn_table" pkg="gazebo" type="spawn_model" args="-urdf -param table_description -model chesstable" respawn="false" output="screen" />
+  <!-- use
+
+$ rosservice call gazebo/delete_model '{model_name: chesstable}'
+
+       to delete the table, then rerun this launch file to create it
+       again -->
+</launch>

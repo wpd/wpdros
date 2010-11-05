@@ -1,0 +1,18 @@
+Background\ ColorR=0
+Background\ ColorG=0
+Background\ ColorB=0
+Fixed\ Frame=/base_link
+Target\ Frame=/base_link
+Camera.Alpha=0.5
+Camera.Enabled=1
+Camera.Image\ Topic=/wide_stereo/left/image_rect_color
+Camera.Transport\ Hint=raw
+Tool\ 2D\ Nav\ GoalTopic=goal
+Tool\ 2D\ Pose\ EstimateTopic=initialpose
+Camera\ Type=rviz::OrbitViewController
+Camera\ Config=1.206 1.1208 2.85386 0.244925 1.0413 -0.643903
+Property\ Grid\ State=selection=;expanded=Camera.Enabled;scrollpos=0,0;splitterpos=150,301;ispageselected=1
+[Display0]
+Name=Camera
+Package=rviz
+ClassName=rviz::CameraDisplay

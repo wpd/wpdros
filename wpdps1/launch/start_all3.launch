@@ -13,7 +13,7 @@
   <include file="$(find pr2_2dnav_local)/pr2_2dnav.launch"/>
 
   <!-- start rviz, shut everything down if dummy kills rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdps1/config/start3.vcg" respawn="false" output="screen" required="true"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wpdps1)/config/start3.vcg" respawn="false" output="screen" required="true"/>
 
   <node name="tuck_arms_action_server" pkg="pr2_tuckarm" type="tuck_arms.py" output="screen"/>
 </launch>

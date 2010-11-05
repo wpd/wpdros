@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- launch the world -->
+  <include file="$(find wpdtb)/launch/make_world.launch"/>
+
+  <!-- launch our services -->
+  <include file="$(find wpdtb)/launch/services5.launch"/>
+</launch>

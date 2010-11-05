@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- start up grasp world with no GUI-->
+  <!-- was
+  <include file="$(find pr2_tabletop_manipulation_gazebo_demo)/launch/grasp_world.launch"/>
+  -->
+  <param name="/use_sim_time" value="true" />
+
+  <!-- grasp.world is basically the same as empty.world, with slightly
+       tweaked quickStep parameters.
+    -->
+  <!--<node name="gazebo" pkg="gazebo" type="gazebo" args="-g $(find pr2_tabletop_manipulation_gazebo_demo)/worlds/grasp.world" respawn="false" output="screen"/>
+  -->
+  <!-- Let's use empty world for now - it seems to start faster -->
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="$(optenv GAZEBO_OPTS) $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
+
+  <!-- send pr2 to param server -->
+  <include file="$(find pr2_gazebo)/pr2.launch" />
+  <!--<include file="$(find pr2_gazebo)/pr2_no_arms.launch" />-->
+
+  <!-- spawn the chess table -->
+  <include file="$(find wpdtb)/launch/make_chess_table.launch"/>
+</launch>
+

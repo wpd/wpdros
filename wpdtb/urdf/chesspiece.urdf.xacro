@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <property name="base_radius"  value="${piece_radius*1.5}"/>
+  <property name="base_length"  value="${piece_length/3.0}"/>
+  <property name="base_mass"    value="${piece_mass*2.0/3.0}"/>
+  <property name="torso_radius" value="${piece_radius}"/>
+  <property name="torso_length" value="${piece_length*2.0/3.0}"/>
+  <property name="torso_mass"   value="${piece_mass*1.0/3.0}"/>
+
+  <xacro:macro name="chesspiece" params="parent piecename color *origin">
+    <joint name="${piecename}_base_joint" type="floating">
+      <insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${piecename}_base"/>
+    </joint>
+    <link name="${piecename}_base">
+      <inertial>
+	<mass value="${(piece_mass*2.0/3.0)}" />
+	<!-- center of mass (com) is defined w.r.t. link local coordinate system -->
+	<origin xyz="0 0 ${(piece_length/3.0)/2.0}" /> 
+
+	<inertia  ixx="${(3*(piece_radius*1.5)*(piece_radius*1.5) + (piece_length/3.0)*(piece_length/3.0))*(piece_mass*2.0/3.0)/12}"
+		  ixy="0"
+		  ixz="0"
+		  iyy="${(3*(piece_radius*1.5)*(piece_radius*1.5) + (piece_length/3.0)*(piece_length/3.0))*(piece_mass*2.0/3.0)/12}"
+		  iyz="0"
+		  izz="${(piece_radius*1.5)*(piece_radius*1.5)*(piece_mass*2.0/3.0)/2}"/>
+      </inertial>
+      <visual>
+	<origin xyz="0 0 ${(piece_length/3.0)/2.0}" rpy="0 0 0" />
+	<geometry>
+	  <cylinder radius="${(piece_radius*1.5)}" length="${(piece_length/3.0)}"/>
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 ${(piece_length/3.0)/2.0}" rpy="0 0 0" />
+	<geometry>
+	  <cylinder radius="${(piece_radius*1.5)}" length="${(piece_length/3.0)}"/>
+	</geometry>
+      </collision>
+    </link>
+    <gazebo reference="${piecename}_base">
+      <turnGravityOff>false</turnGravityOff>
+      <genTexCoord>true</genTexCoord>
+      <kp>100000000.0</kp>
+      <kd>1000000.0</kd>
+      <material>Gazebo/${color}</material>
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <joint name="${piecename}_torso_joint" type="fixed">
+      <origin xyz="0 0 ${(piece_length/3.0)}" rpy="0 0 0"/>
+      <parent link="${piecename}_base"/>
+      <child link="${piecename}_torso"/>
+    </joint>
+
+    <link name="${piecename}_torso">
+      <inertial>
+	<mass value="${(piece_mass*1.0/3.0)}" />
+	<!-- center of mass (com) is defined w.r.t. link local coordinate system -->
+	<origin xyz="0 0 ${(piece_length*2.0/3.0)/2.0}" /> 
+
+	<inertia  ixx="${(3*(piece_radius)*(piece_radius) + (piece_length*2.0/3.0)*(piece_length*2.0/3.0))*(piece_mass*1.0/3.0)/12}"
+		  ixy="0"
+		  ixz="0"
+		  iyy="${(3*(piece_radius)*(piece_radius) + (piece_length*2.0/3.0)*(piece_length*2.0/3.0))*(piece_mass*1.0/3.0)/12}"
+		  iyz="0"
+		  izz="${(piece_radius)*(piece_radius)*(piece_mass*1.0/3.0)/2}"/>
+      </inertial>
+      <visual>
+	<origin xyz="0 0 ${(piece_length*2.0/3.0)/2.0}" rpy="0 0 0" />
+	<geometry>
+	  <cylinder radius="${(piece_radius)}" length="${(piece_length*2.0/3.0)}"/>
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 ${(piece_length*2.0/3.0)/2.0}" rpy="0 0 0" />
+	<geometry>
+	  <cylinder radius="${(piece_radius)}" length="${(piece_length*2.0/3.0)}"/>
+	</geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${piecename}_torso">
+      <turnGravityOff>false</turnGravityOff>
+      <genTexCoord>true</genTexCoord>
+      <kp>100000000.0</kp>
+      <kd>1000000.0</kd>
+      <material>Gazebo/${color}</material>
+      <selfCollide>true</selfCollide>
+    </gazebo>
+  </xacro:macro>
+</robot>
