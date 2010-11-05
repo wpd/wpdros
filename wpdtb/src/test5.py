@@ -230,12 +230,12 @@ class PieceMoverActionServer:
                                            latch=True)
 
         self.open_gripper_cmd = Pr2GripperCommand()
-        self.open_gripper_cmd.position = 2*self.chesspiece['radius']+0.01
-        self.open_gripper_cmd.max_effort = 100
+        self.open_gripper_cmd.position = 2*2*self.chesspiece['radius']
+        self.open_gripper_cmd.max_effort = 50
 
         self.close_gripper_cmd = Pr2GripperCommand()
-        self.close_gripper_cmd.position = 0.9 * 2*self.chesspiece['radius']
-        self.close_gripper_cmd.max_effort = 10
+        self.close_gripper_cmd.position = 0.5*2*self.chesspiece['radius']
+        self.close_gripper_cmd.max_effort = 50
 
         #start tf listener
         self.tf_listener = tf.TransformListener()
@@ -352,6 +352,7 @@ class PieceMoverActionServer:
 
     def open_gripper(self):
         self.gripper_pub.publish(self.open_gripper_cmd)
+#	raw_input("Gripper should be open now.  Press Enter")
         self.settle()
 
     def grasp(self, pos):
@@ -360,6 +361,7 @@ class PieceMoverActionServer:
         self.settle()
 
         self.gripper_pub.publish(self.close_gripper_cmd)
+#	raw_input("grasp: Gripper should be closed now.  Press Enter")
         self.settle()
         loc = self.move_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
@@ -376,6 +378,7 @@ class PieceMoverActionServer:
 
 #        raw_input("Ready to open gripper... please press enter...")
         self.gripper_pub.publish(self.open_gripper_cmd)
+#	raw_input("place: Gripper should be open now.  Press Enter...")
         self.settle()
 
     def arm_at_rest(self, pos):
