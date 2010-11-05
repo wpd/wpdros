@@ -3,9 +3,6 @@
   <!-- launch the world -->
   <include file="$(find wpdtb)/launch/make_world.launch"/>
 
-  <!-- launch the kinematics solver node -->
-  <include file="$(find pr2_arm_kinematics)/launch/pr2_ik_rarm_node.launch"/>
-
-  <rosparam name="chessboard_rosparam" file="$(find wpdtb)/urdf/chessboard.yaml"/>
-  <node name="test5" pkg="wpdtb" type="test5.py" output="screen" required="true"/>
+  <!-- launch our services -->
+  <include file="$(find wpdtb)/launch/services5.launch"/>
 </launch>

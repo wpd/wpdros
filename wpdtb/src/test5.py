@@ -22,6 +22,7 @@ joint_names = ["shoulder_pan",
 class PieceMoverActionServer:
     # We're not really a server yet, but we'll get there eventually
     def __init__(self, node_name, side='r'):
+        self.user_settle = False
         self.node_name = node_name
         self.side = side
         side_name = 'right' if (side == 'r') else 'left'
@@ -347,67 +348,35 @@ class PieceMoverActionServer:
         loc = self.move_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
         # Allow time for the arm to settle
-        r = rospy.Rate(10)
-        if True:
-            print "waiting for arm to settle..."
-            for i in range(50):
-                if rospy.is_shutdown():
-                    break
-                try:
-                    (trans, rot) = \
-                        self.tf_listener.lookupTransform("/base_link",
-                                                         self.side + "_gripper_l_finger_tip_frame",
-                                                         rospy.Time(0))
-                except (ft.LookupException. tf.ConnectivityException):
-                    continue
-                print trans, rot
-                r.sleep()
-        else:
-            raw_input("Hit enter when the arm has settled...")
-        print "should be at XYZ =", loc[1]
+        self.settle()
 
     def open_gripper(self):
         self.gripper_pub.publish(self.open_gripper_cmd)
-
-        # settling time
-        r = rospy.Rate(10)
-        for i in range (5):
-            r.sleep()
+        self.settle()
 
     def grasp(self, pos):
         loc = self.grasp_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        self.settle()
 
-        # settling time
-        r = rospy.Rate(10)
-        for i in range (5):
-            r.sleep()
-#        raw_input("Ready to close gripper... please press enter...")
         self.gripper_pub.publish(self.close_gripper_cmd)
+        self.settle()
         loc = self.move_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
-        # settling time
-        r = rospy.Rate(10)
-        for i in range (5):
-            r.sleep()
+        self.settle()
 
     def place(self, pos):
         loc = self.move_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 2.5)
-        # settling time
-        r = rospy.Rate(10)
-        for i in range (5):
-            r.sleep()
+        self.settle()
 
         loc = self.grasp_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
-        # settling time
-        r = rospy.Rate(10)
-        for i in range (5):
-            r.sleep()
+        self.settle()
 
 #        raw_input("Ready to open gripper... please press enter...")
         self.gripper_pub.publish(self.open_gripper_cmd)
+        self.settle()
 
     def arm_at_rest(self, pos):
         arm_joints,arm_up_poses = self.move_locs[pos]
@@ -420,10 +389,11 @@ class PieceMoverActionServer:
             arm_up_poses[shoulder_pan_idx] =  math.pi/2
         self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
 
-
-    def settle(self, dur, rate=10):
+    def settle(self, dur=2, rate=10):
         r = rospy.Rate(rate)
-        if True:
+        if self.user_settle:
+            raw_input("Hit enter when the arm has settled...")
+        else:
             for i in range(int(dur*rate)):
                 if rospy.is_shutdown():
                     break
@@ -434,10 +404,10 @@ class PieceMoverActionServer:
                                                          rospy.Time(0))
                 except (ft.LookupException. tf.ConnectivityException):
                     continue
-                print trans, rot
+#                print trans, rot
+                print "[" + ','.join(["%6.3f" % x for x in trans]) + "]" + \
+                    "  [" + ','.join(["%6.3f" % x for x in rot])   + "]"
                 r.sleep()
-        else:
-            raw_input("Hit enter when the arm has settled...")
         
 def main():
     rospy.init_node("test5")
@@ -484,7 +454,7 @@ def main():
 
 if __name__ == '__main__':
     rospy.init_node('test5')
-    sleep_dur = int(os.getenv("SLEEP_DUR", 5))
+    sleep_dur = int(os.getenv("SLEEP_DUR", 3))
     rospy.sleep(sleep_dur) # wait for the world to start
     main()
 
