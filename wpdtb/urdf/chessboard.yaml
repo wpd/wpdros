@@ -17,7 +17,7 @@ chessboard:
 
 chesspiece:
   length: 0.05
-  radius: 0.0025
+  radius: 0.005
   mass: 0.005
 
     
