@@ -288,7 +288,7 @@ class PieceMoverActionServer:
             raise
 
         if resp.error_code.val != resp.error_code.SUCCESS:
-            raise Exception("No IK Solution -- error code %s" % str(resp.error_code))
+            raise Exception("No IK Solution at XYZ=[%f, %f, %f] -- error code %s" % (x, y, z, str(resp.error_code)))
         return [resp.solution.joint_state.name,
                 resp.solution.joint_state.position]
 
