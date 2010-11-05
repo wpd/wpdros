@@ -234,7 +234,7 @@ class PieceMoverActionServer:
         self.open_gripper_cmd.max_effort = 100
 
         self.close_gripper_cmd = Pr2GripperCommand()
-        self.close_gripper_cmd.position = 2*self.chesspiece['radius']-0.1
+        self.close_gripper_cmd.position = 2*self.chesspiece['radius']-0.01
         self.close_gripper_cmd.max_effort = 10
 
         #start tf listener
