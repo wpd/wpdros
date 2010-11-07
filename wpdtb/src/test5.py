@@ -68,7 +68,7 @@ class PieceMoverActionServer:
 #                                                [0.011 to 0.305] prismatic
 # r_shoulder_pan_link          [ 0       -0.188   0]
 #                                         [-2.135 to 0.565] revolute
-# r_shoulder_lift_link         [ 0,1      0       0]
+# r_shoulder_lift_link         [ 0.1      0       0]
 #                                 [-0.354 to 1.296] revolute
 # r_upper_arm_roll_link        [ 0        0       0]
 #                        [-3.750 to 0.650] revolute
@@ -345,40 +345,52 @@ class PieceMoverActionServer:
         shoulder_lift_idx = arm_joints.index(self.side + "_shoulder_lift_joint")
         arm_up_poses[shoulder_lift_idx] = -math.pi/2
         self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
+        print "Hovering high over", pos
+        self.settle()
         loc = self.move_locs[pos]
+        print "Moving to hover low over", pos
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        print "settling hover low over", pos
         # Allow time for the arm to settle
         self.settle()
 
     def open_gripper(self):
         self.gripper_pub.publish(self.open_gripper_cmd)
+        print "Gripper opening"
 #	raw_input("Gripper should be open now.  Press Enter")
         self.settle()
 
     def grasp(self, pos):
         loc = self.grasp_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        print "Settling to grasp at", pos
         self.settle()
 
         self.gripper_pub.publish(self.close_gripper_cmd)
+        print "Gripper closing"
 #	raw_input("grasp: Gripper should be closed now.  Press Enter")
         self.settle()
         loc = self.move_locs[pos]
+        print "Lifting to move_loc", pos
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        print "Setting over move loc", pos
         self.settle()
 
     def place(self, pos):
-        loc = self.move_locs[pos]
-        self.move_arm(self.side, loc[0], [loc[1]], 2.5)
-        self.settle()
+#        loc = self.move_locs[pos]
+#        self.move_arm(self.side, loc[0], [loc[1]], 2.5)
+#        print "Settling over move loc", loc
+#        self.settle()
 
         loc = self.grasp_locs[pos]
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
+        print "Settling at grasp_loc", pos
         self.settle()
 
 #        raw_input("Ready to open gripper... please press enter...")
         self.gripper_pub.publish(self.open_gripper_cmd)
 #	raw_input("place: Gripper should be open now.  Press Enter...")
+        print "Gripper opening"
         self.settle()
 
     def arm_at_rest(self, pos):
@@ -392,7 +404,7 @@ class PieceMoverActionServer:
             arm_up_poses[shoulder_pan_idx] =  math.pi/2
         self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
 
-    def settle(self, dur=2, rate=10):
+    def settle(self, dur=1, rate=10):
         r = rospy.Rate(rate)
         if self.user_settle:
             raw_input("Hit enter when the arm has settled...")
@@ -440,13 +452,13 @@ def main():
             if to_pos in mover.grasp_locs:
                 break
 
-        print "Moving to location", from_pos, "..."
+        print "Moving to hove over location", from_pos, "..."
         mover.hover_over(from_pos)
         print "...done.  Opening gripper..."
         mover.open_gripper()
         print "...done.  Grasping piece..."
         mover.grasp(from_pos)
-        print "...done.  Moving to location", to_pos, "..."
+        print "...done.  Moving to hover over location", to_pos, "..."
         mover.hover_over(to_pos)
         print "...done.  Placing piece..."
         mover.place(to_pos)
