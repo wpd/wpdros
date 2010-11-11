@@ -23,9 +23,6 @@
   <property name="piece_length" value="0.05"/>
   <property name="piece_mass"   value="0.01"/> <!-- MKS units => 10g -->
   <property name="boardthickness" value="0.01"/>
-  <property name="square_mass"    value=".001"/>
-  <property name="whitesquare_color" value="Gazebo/Rocky"/>
-  <property name="blacksquare_color" value="Gazebo/WoodFloor"/>
 
   <!-- row 1 location -->
   <property name="r1" value="${table_x-3.5*pitch}"/>
@@ -42,44 +39,7 @@
   <property name="cg" value="${table_y-2.5*pitch}"/>
   <property name="ch" value="${table_y-3.5*pitch}"/>
 
-  <xacro:macro name="square1" params="name parent color depth *origin">
-    <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
-      <parent link="${parent}"/>
-      <child link="${name}_link"/>
-    </joint>
-    <link name="${name}_link">
-      <inertial>
-	<mass value="${square_mass}" />
-	<inertia  ixx="${2*pitch*pitch*square_mass/12}"
-		  ixy="0"
-		  ixz="0"
-		  iyy="${2*pitch*pitch*square_mass/12}"
-		  iyz="0"
-		  izz="${2*depth*depth*square_mass/12}"/>
-      </inertial>
-      <visual>
-	<geometry>
-	  <box size="${pitch} ${pitch} ${depth}"/>
-	</geometry>
-      </visual>
-      <collision>
-	<geometry>
-	  <box size="${pitch} ${pitch} ${depth}"/>
-	</geometry>
-      </collision>
-    </link>
-    <gazebo reference="${name}_link">
-      <turnGravityOff>false</turnGravityOff>
-      <genTexCoord>true</genTexCoord>
-      <kp>100000000.0</kp>
-      <kd>1000000.0</kd>
-      <material>${color}</material>
-      <selfCollide>false</selfCollide>
-    </gazebo>
-  </xacro:macro>
-
-  <xacro:macro name="square4" params="name parent depth *origin">
+  <xacro:macro name="square4" params="name parent *origin">
     <joint name="${name}_center_joint" type="fixed">
       <insert_block name="origin" />
       <parent link="${parent}"/>
@@ -87,25 +47,26 @@
     </joint>
     <link name="${name}_center_link">
       <inertial>
-	<mass value="${4*square_mass}" />
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
-	<inertia  ixx="${2*4*pitch*pitch*4*square_mass/12}"
+	<mass value="1" />
+	<origin xyz="0 0 ${boardthickness/4}" rpy="0 0 0" />
+	<!-- need(?) to figure out the rotational inertia matrix for a rectangle-->
+	<inertia  ixx="${(3*(piece_radius*1.5)*(piece_radius*1.5) + (piece_length/3.0)*(piece_length/3.0))*(piece_mass*2.0/3.0)/12}"
 		  ixy="0"
 		  ixz="0"
-		  iyy="${2*4*pitch*pitch*4*square_mass/12}"
+		  iyy="${(3*(piece_radius*1.5)*(piece_radius*1.5) + (piece_length/3.0)*(piece_length/3.0))*(piece_mass*2.0/3.0)/12}"
 		  iyz="0"
-		  izz="${2*depth*depth/4*4*square_mass/12}"/>
+		  izz="${(piece_radius*1.5)*(piece_radius*1.5)*(piece_mass*2.0/3.0)/2}"/>
       </inertial>
       <visual>
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
+	<origin xyz="0 0 ${boardthickness/4}" rpy="0 0 0" />
 	<geometry>
-	  <box size="${2*pitch} ${2*pitch} ${depth/2}"/>
+	  <box size="${2*pitch} ${2*pitch} ${boardthickness/2}"/>
 	</geometry>
       </visual>
       <collision>
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
+	<origin xyz="0 0 ${boardthickness/4}" rpy="0 0 0" />
 	<geometry>
-	  <box size="${2*pitch} ${2*pitch} ${depth/2}"/>
+	  <box size="${2*pitch} ${2*pitch} ${boardthickness/2}"/>
 	</geometry>
       </collision>
     </link>
@@ -114,180 +75,85 @@
       <genTexCoord>true</genTexCoord>
       <kp>100000000.0</kp>
       <kd>1000000.0</kd>
-      <material>Gazebo/Black</material>
-      <selfCollide>false</selfCollide>
+<!--      <material>Gazebo/White</material>-->
+      <selfCollide>true</selfCollide>
     </gazebo>
-
-    <xacro:square1 name="${name}_a1"
-		   parent="${name}_center_link"
-		   color="${whitesquare_color}"
-		   depth="${depth/2}">
-      <origin xyz="${-pitch/2} ${pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square1>
-
-    <xacro:square1 name="${name}_b1"
-		   parent="${name}_center_link"
-		   color="${blacksquare_color}"
-		   depth="${depth/2}">
-      <origin xyz="${-pitch/2} ${-pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square1>
-
-    <xacro:square1 name="${name}_a2"
-		   parent="${name}_center_link"
-		   color="${blacksquare_color}"
-		   depth="${depth/2}">
-      <origin xyz="${pitch/2} ${pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square1>
-
-    <xacro:square1 name="${name}_b2"
-		   parent="${name}_center_link"
-		   color="${whitesquare_color}"
-		   depth="${depth/2}">
-      <origin xyz="${pitch/2} ${-pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square1>
-  </xacro:macro>
-
-  <xacro:macro name="square16" params="name parent depth *origin">
-    <joint name="${name}_center_joint" type="fixed">
-      <insert_block name="origin" />
-      <parent link="${parent}"/>
-      <child link="${name}_center_link"/>
+    <joint name="${name}_a1_joint" type="fixed">
+      <origin xyz="${-pitch/2} ${pitch/2} ${3*boardthickness/4}" rpy="0 0 0"/>
+      <parent link="${name}_center_link"/>
+      <child link="${name}_a1_link"/>
     </joint>
-    <link name="${name}_center_link">
-      <inertial>
-	<mass value="${4*square_mass}" />
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
-	<inertia  ixx="${2*16*pitch*pitch*4*square_mass/12}"
+    <link name="${name}_a1_link">
+     <inertial>
+	<mass value="1" />
+	<!-- need(?) to figure out the rotational inertia matrix for a rectangle-->
+	<inertia  ixx="${(3*(piece_radius)*(piece_radius) + (piece_length*2.0/3.0)*(piece_length*2.0/3.0))*(piece_mass*1.0/3.0)/12}"
 		  ixy="0"
 		  ixz="0"
-		  iyy="${2*16*pitch*pitch*4*square_mass/12}"
+		  iyy="${(3*(piece_radius)*(piece_radius) + (piece_length*2.0/3.0)*(piece_length*2.0/3.0))*(piece_mass*1.0/3.0)/12}"
 		  iyz="0"
-		  izz="${2*depth*depth/4*4*square_mass/12}"/>
+		  izz="${(piece_radius)*(piece_radius)*(piece_mass*1.0/3.0)/2}"/>
       </inertial>
       <visual>
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
 	<geometry>
-	  <box size="${4*pitch} ${4*pitch} ${depth/2}"/>
+	  <box size="${pitch} ${pitch} ${boardthickness/2}"/>
 	</geometry>
       </visual>
       <collision>
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
 	<geometry>
-	  <box size="${4*pitch} ${4*pitch} ${depth/2}"/>
+	  <box size="${pitch} ${pitch} ${boardthickness/2}"/>
 	</geometry>
       </collision>
     </link>
-    <gazebo reference="${name}_center_link">
+
+    <gazebo reference="${name}_a1_link">
       <turnGravityOff>false</turnGravityOff>
       <genTexCoord>true</genTexCoord>
       <kp>100000000.0</kp>
       <kd>1000000.0</kd>
-      <material>Gazebo/Black</material>
-      <selfCollide>false</selfCollide>
+      <material>Gazebo/White</material>
+      <selfCollide>true</selfCollide>
     </gazebo>
-
-    <xacro:square4 name="${name}_a1"
-		   parent="${name}_center_link"
-		   depth="${depth/2}">
-      <origin xyz="${-2*pitch/2} ${2*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square4>
-
-    <xacro:square4 name="${name}_b1"
-		   parent="${name}_center_link"
-
-		   depth="${depth/2}">
-      <origin xyz="${-2*pitch/2} ${-2*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square4>
-
-    <xacro:square4 name="${name}_a2"
-		   parent="${name}_center_link"
-		   depth="${depth/2}">
-      <origin xyz="${2*pitch/2} ${2*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square4>
-
-    <xacro:square4 name="${name}_b2"
-		   parent="${name}_center_link"
-		   depth="${depth/2}">
-      <origin xyz="${2*pitch/2} ${-2*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square4>
   </xacro:macro>
 
-  <xacro:macro name="square64" params="name parent depth *origin">
+  <xacro:macro name="square4x" params="name parent *origin">
     <joint name="${name}_center_joint" type="fixed">
-      <insert_block name="origin" />
+      <insert_block name="origin"/>
       <parent link="${parent}"/>
       <child link="${name}_center_link"/>
     </joint>
-    <link name="${name}_center_link">
-      <inertial>
-	<mass value="${4*square_mass}" />
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
-	<inertia  ixx="${2*64*pitch*pitch*4*square_mass/12}"
-		  ixy="0"
-		  ixz="0"
-		  iyy="${2*64*pitch*pitch*4*square_mass/12}"
-		  iyz="0"
-		  izz="${2*depth*depth/4*4*square_mass/12}"/>
-      </inertial>
+    <link name="${name}_center_link"/>
+    <joint name="${name}_a1_joint" type="fixed">
+      <origin xyz="${-pitch/2} ${-pitch/2} ${boardthickness}" rpy="0 0 0"/>
+      <parent link="${name}_center_link"/>
+      <child link="${name}_a1_link"/>
+    </joint>
+    <link name="${name}_a1_link">
       <visual>
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
 	<geometry>
-	  <box size="${8*pitch} ${8*pitch} ${depth/2}"/>
+	  <box size="${pitch} ${pitch} ${boardthickness}"/>
 	</geometry>
       </visual>
-      <collision>
-	<origin xyz="0 0 ${depth/4}" rpy="0 0 0" />
-	<geometry>
-	  <box size="${8*pitch} ${8*pitch} ${depth/2}"/>
-	</geometry>
-      </collision>
     </link>
-    <gazebo reference="${name}_center_link">
+    <gazebo reference="${name}_a1_link">
       <turnGravityOff>false</turnGravityOff>
       <genTexCoord>true</genTexCoord>
       <kp>100000000.0</kp>
       <kd>1000000.0</kd>
-      <material>Gazebo/Black</material>
-      <selfCollide>false</selfCollide>
+      <material>Gazebo/White</material>
+      <selfCollide>true</selfCollide>
     </gazebo>
-
-    <xacro:square16 name="${name}_a1"
-		    parent="${name}_center_link"
-		    depth="${depth/2}">
-      <origin xyz="${-4*pitch/2} ${4*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square16>
-
-    <xacro:square16 name="${name}_b1"
-		    parent="${name}_center_link"
-		    depth="${depth/2}">
-      <origin xyz="${-4*pitch/2} ${-4*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square16>
-
-    <xacro:square16 name="${name}_a2"
-		    parent="${name}_center_link"
-		    depth="${depth/2}">
-      <origin xyz="${4*pitch/2} ${4*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square16>
-
-    <xacro:square16 name="${name}_b2"
-		    parent="${name}_center_link"
-		    depth="${depth/2}">
-      <origin xyz="${4*pitch/2} ${-4*pitch/2} ${3*depth/4}" rpy="0 0 0"/>
-    </xacro:square16>
   </xacro:macro>
 
-  <xacro:square64 name="gameboard"
-		  parent="table_top_link"
-		  depth="${boardthickness}">
+  <xacro:square4 name="blah" parent="table_top_link">
     <origin xyz="${table_x} ${table_y} ${table_height}" rpy="0 0 0" />
-  </xacro:square64>
-
+  </xacro:square4>
 <!--
   <xacro:chesspiece parent="table_top_link" piecename="wch" color="Black" >
     <origin xyz="${r1} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
 -->
-<!--
+
   <xacro:chesspiece parent="table_top_link" piecename="wca" color="White" >
     <origin xyz="${r1} ${ca} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
@@ -351,9 +217,8 @@
   <xacro:chesspiece parent="table_top_link" piecename="wph" color="White" >
     <origin xyz="${r2} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
--->
+
   <!-- Set up the black pieces -->
-<!--
   <xacro:chesspiece parent="table_top_link" piecename="bca" color="Black" >
     <origin xyz="${r8} ${ca} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
@@ -417,5 +282,4 @@
   <xacro:chesspiece parent="table_top_link" piecename="bph" color="Black" >
     <origin xyz="${r7} ${ch} ${piece_z}" rpy="0 0 0" />
   </xacro:chesspiece>
--->
 </robot>

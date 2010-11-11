@@ -1,0 +1,3 @@
+[31m[ERROR] [1289151206.273115997]:     Joint blah_a1_joint is missing a parent and/or child link specification.[0m
+[31m[ERROR] [1289151206.273220997]: failed to build tree[0m
+ERROR: Model Parsing the xml failed

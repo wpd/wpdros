@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+import roslib; roslib.load_manifest('wpdtb')
+import rospy
+import math
+
+import actionlib
+from pr2_controllers_msgs.msg import *
+from trajectory_msgs.msg import *
+
+# Joint names
+joint_names = ["r_shoulder_pan_joint",
+               "r_shoulder_lift_joint",
+               "r_upper_arm_roll_joint",
+               "r_elbow_flex_joint",
+               "r_forearm_roll_joint",
+               "r_wrist_flex_joint",
+               "r_wrist_roll_joint"]
+
+def aim_head(frame_id, x = 0, y = 0, z = 0):
+    ac = actionlib.SimpleActionClient('/head_traj_controller/point_head_action',
+                                      PointHeadAction)
+    ac.wait_for_server()
+    g = PointHeadGoal()
+    g.target.header.frame_id = frame_id
+    g.target.point.x = x
+    g.target.point.y = y
+    g.target.point.z = z
+    g.min_duration = rospy.Duration(.5)
+    ac.send_goal(g)
+    ac.wait_for_result()
+
+def main():
+    rospy.init_node('test')
+    
+    aim_head('/r_gripper_l_finger_tip_frame')
+
+    # Point the head where the arm will be
+    dl = 0.4+0.321*math.cos(0.15) # upper_arm_len = 0.4, forearm_len = 0.321
+    theta = math.asin(0.188/dl) # offset to pan joint = 0.188
+
+    # Move the right hand to y=0,
+    ac = actionlib.SimpleActionClient("r_arm_controller/joint_trajectory_action",
+                                      JointTrajectoryAction)
+    ac.wait_for_server()
+    g = JointTrajectoryGoal()
+    g.trajectory.joint_names = joint_names
+    g.trajectory.points = \
+        [JointTrajectoryPoint(positions = [theta,		# shoulder_pan
+                                           0,			# shoulder_lift
+                                           0,			# arm_roll
+                                           -0.15,		# elbow_flex
+                                           0,			# forearm_roll
+                                           -(math.pi/2-0.15),# wrist_flex
+                                           -theta],		# wrist_roll
+                              velocities = [],
+                              accelerations = [],
+                              time_from_start = rospy.Duration(2.5))]
+
+    ac.send_goal_and_wait(g, rospy.Duration(30), rospy.Duration(5))
+
+    aim_head('/r_gripper_l_finger_tip_frame')
+
+if __name__ == '__main__':
+    main()
