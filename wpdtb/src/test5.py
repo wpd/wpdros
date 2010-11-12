@@ -5,6 +5,7 @@ import math
 import os
 #import readline
 
+# torso was set to 0.273470237921 when playing in the lab
 import actionlib
 import tf
 from kinematics_msgs.srv import *
