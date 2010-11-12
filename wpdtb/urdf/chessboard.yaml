@@ -12,12 +12,12 @@ chessboard:
   center:
     x: 0.52
     y: -0.188
-  thickness: 0.0
-  pitch: 0.04
+  thickness: 0.01
+  pitch: 0.031625
 
 chesspiece:
-  length: 0.05
+  length: 0.03
   radius: 0.005
-  mass: 0.005
+  mass: 0.0055
 
     

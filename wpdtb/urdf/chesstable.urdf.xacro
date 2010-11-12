@@ -14,13 +14,13 @@
   <property name="table_y" value="-0.188" />
   <property name="table_z" value="0.0" />
 
-  <property name="leg_radius" value="0.02" />
   <property name="table_top_thickness" value="0.05"/>
+  <property name="leg_radius" value="0.02" />
 
   <property name="piece_z" value="${table_z+table_height+boardthickness}" />
   <property name="pitch" value="0.031625"/>
-  <property name="piece_radius" value="0.005"/>
   <property name="piece_length" value="0.03"/>
+  <property name="piece_radius" value="0.005"/>
   <property name="piece_mass"   value="0.0055"/> <!-- 5.5g -->
   <property name="boardthickness" value="0.01"/>
   <property name="square_mass"    value="1"/>

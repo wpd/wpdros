@@ -22,7 +22,7 @@ joint_names = ["shoulder_pan",
 class PieceMoverActionServer:
     # We're not really a server yet, but we'll get there eventually
     def __init__(self, node_name, side='r'):
-        self.user_settle = False
+        self.user_settle = True
         self.node_name = node_name
         self.side = side
         side_name = 'right' if (side == 'r') else 'left'
