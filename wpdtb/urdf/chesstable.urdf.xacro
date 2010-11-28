@@ -276,11 +276,49 @@
     </xacro:square16>
   </xacro:macro>
 
+<!--
   <xacro:square64 name="gameboard"
 		  parent="table_top_link"
 		  depth="${boardthickness}">
     <origin xyz="${table_x} ${table_y} ${table_height}" rpy="0 0 0" />
   </xacro:square64>
+-->
+<joint name="board_joint" type="fixed">
+  <origin xyz="${table_x} ${table_y} ${table_height}" rpy="0 0 0" />
+  <parent link="table_top_link"/>
+  <child link="board_link"/>
+</joint>
+<link name="board_link">
+  <inertial>
+    <mass value="${64*square_mass}" />
+    <inertia ixx="${2*64*pitch*pitch*64*square_mass/12}"
+	     ixy="0"
+	     ixz="0"
+	     iyy="${2*64*pitch*pitch*64*square_mass/12}"
+	     iyz="0"
+	     izz="${2*boardthickness*boardthickness*64*square_mass/12}"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 ${boardthickness/2}" rpy="0 0 0"/>
+    <geometry>
+      <box size="${8*pitch} ${8*pitch} ${boardthickness}" />
+    </geometry>
+  </visual>
+  <collision>
+    <origin xyz="0 0 ${boardthickness/2}" rpy="0 0 0"/>
+    <geometry>
+      <box size="${8*pitch} ${8*pitch} ${boardthickness}" />
+    </geometry>
+  </collision>
+</link>
+<gazebo reference="board_link">
+  <turnGravityOff>false</turnGravityOff>
+  <genTexCoord>true</genTexCoord>
+  <kp>100000000.0</kp>
+  <kd>1000000.0</kd>
+  <material>Gazebo/Black</material>
+  <selfCollide>false</selfCollide>
+</gazebo>
 
 <!--
   <xacro:chesspiece parent="table_top_link" piecename="wch" color="Black" >
