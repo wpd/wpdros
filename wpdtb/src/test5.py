@@ -359,7 +359,7 @@ class PieceMoverActionServer:
         self.gripper_pub.publish(self.open_gripper_cmd)
         print "Gripper opening"
 #	raw_input("Gripper should be open now.  Press Enter")
-        self.settle()
+#        self.settle()
 
     def grasp(self, pos):
         loc = self.grasp_locs[pos]
@@ -441,6 +441,8 @@ def main():
     print "..done.  Moving arms out of the way..."
     mover.move_arm_out_of_the_way()
     mover.move_arm_out_of_the_way('r')
+    print "...done.  Opening gripper..."
+    mover.open_gripper()
     print "...done."
 
     while not rospy.is_shutdown():
@@ -455,8 +457,6 @@ def main():
 
         print "Moving to hove over location", from_pos, "..."
         mover.hover_over(from_pos)
-        print "...done.  Opening gripper..."
-        mover.open_gripper()
         print "...done.  Grasping piece..."
         mover.grasp(from_pos)
         print "...done.  Moving to hover over location", to_pos, "..."
