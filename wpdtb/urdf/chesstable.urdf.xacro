@@ -8,9 +8,11 @@
        simulator_gazebo/gazebo_worlds/objects/table.urdf.xacro
     -->
   <property name="table_height" value="0.4" />
+<!--  <property name="table_height" value="0.6885" />-->
   <property name="table_width" value="0.5" />
   <property name="table_depth" value="2.0" />
   <property name="table_x" value="0.52" />
+<!--  <property name="table_x" value="2.52" />-->
   <property name="table_y" value="-0.188" />
   <property name="table_z" value="0.0" />
 
