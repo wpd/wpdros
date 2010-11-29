@@ -316,7 +316,7 @@
   <genTexCoord>true</genTexCoord>
   <kp>100000000.0</kp>
   <kd>1000000.0</kd>
-  <material>Gazebo/Black</material>
+  <material>Gazebo/WoodPallet</material>
   <selfCollide>false</selfCollide>
 </gazebo>
 
