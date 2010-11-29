@@ -406,8 +406,8 @@ class PieceMoverActionServer:
         loc = self.move_locs[pos]
         print "Lifting to move_loc", pos
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
-        print "Setting over move loc", pos
-        self.settle()
+#        print "Setting over move loc", pos
+#        self.settle()
 
     def place(self, pos):
 #        loc = self.move_locs[pos]
