@@ -251,8 +251,9 @@ class PieceMoverActionServer:
         # a long time, we could listen for the joint states and parse out
         # the torso.  Or we could do this via TF.  I'm not sure what
         # the best option would be...
-        self.torso_position_listener = rospy.Listener("/joint_states",
-                                                      JointState)
+#        self.torso_position_listener = rospy.Listener("/joint_states",
+#                                                      JointState)
+
         #start tf listener
         self.tf_listener = tf.TransformListener()
 
@@ -455,7 +456,7 @@ def main():
 #        print "Exception raised when playing with the mover: %s" % str(e)
         raise
 
-    if false:
+    if False:
         print "Targets computer, lifting torso..."
         mover.lift_torso()
         print "Torso lifted, pointing head..."
