@@ -405,10 +405,10 @@ class PieceMoverActionServer:
             arm_up_poses[shoulder_pan_idx] =  math.pi/2
         self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
 
-    def settle(self, dur=1, rate=10):
+    def settle(self, msg="Hit enter when the arm has settled...", dur=1, rate=10):
         r = rospy.Rate(rate)
         if self.user_settle:
-            raw_input("Hit enter when the arm has settled...")
+            raw_input(msg)
         else:
             for i in range(int(dur*rate)):
                 if rospy.is_shutdown():
