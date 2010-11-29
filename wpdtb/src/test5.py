@@ -238,8 +238,27 @@ class PieceMoverActionServer:
         self.close_gripper_cmd.position = 0.5*2*self.chesspiece['radius']
         self.close_gripper_cmd.max_effort = 50
 
+        # Set up for raising the torso
+        self.torso_pub = rospy.Publisher("torso_controller/command",
+                                         JointTrajectory)
+        self.torso_up_cmd = JointTrajectory()
+        self.torso_up_cmd.joint_names = ["torso_lift_joint"]
+        self.torso_up_cmd.points = [JointTrajectoryPoint(positions = [0.2735],
+                                                         velocities = [],
+                                                         accelerations = [],
+                                                         time_from_start = rospy.Duration(2.5))]
+        # Raising the torso takes a _long_ time.  Intead of pausing for
+        # a long time, we could listen for the joint states and parse out
+        # the torso.  Or we could do this via TF.  I'm not sure what
+        # the best option would be...
+        self.torso_position_listener = rospy.Listener("/joint_states",
+                                                      JointState)
         #start tf listener
         self.tf_listener = tf.TransformListener()
+
+    def lift_torso(self):
+        self.torso_pub.publish(self.torso_up_cmd)
+        self.settle("Hit enter when the torso has lifted")
 
     def aim_head(self):
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
@@ -436,7 +455,12 @@ def main():
 #        print "Exception raised when playing with the mover: %s" % str(e)
         raise
 
-    print "Targets computed, pointing head..."
+    if false:
+        print "Targets computer, lifting torso..."
+        mover.lift_torso()
+        print "Torso lifted, pointing head..."
+    else:
+        print "Targets computed, pointing head..."
     mover.aim_head()
     print "..done.  Moving arms out of the way..."
     mover.move_arm_out_of_the_way()
