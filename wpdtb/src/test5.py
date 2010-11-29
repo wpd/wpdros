@@ -322,6 +322,8 @@ class PieceMoverActionServer:
         gripper_z = 0.18 + 0.02
         pitch = self.chessboard['pitch']
 
+        # hover_locs is where I want to hover to make sure I'm in the
+        # right place.  I don't actually seem to use this anywhere.
         z_hover = gripper_z              + \
             self.chesstable['z']         + \
             self.chesstable['height']    + \
@@ -331,6 +333,9 @@ class PieceMoverActionServer:
 #        print "z_hover =", z_hover, " ->", z_hover - gripper_z
         self.hover_locs = {}
 
+        # grasp_locs is here I want to be in order to grab the piece.
+        # Note that this assumes that all the pieces are the same
+        # height.  Note that that is an incorrect assumption.
         z_grasp = gripper_z              + \
             self.chesstable['height']    + \
             self.chesstable['z']         + \
@@ -340,6 +345,8 @@ class PieceMoverActionServer:
 #        print "z_grasp =", z_grasp, " ->", z_grasp - gripper_z
         self.grasp_locs = {}
 
+        # move_locs is the height of a Z plane where I want to be while
+        # moving a piece.
         z_move = gripper_z               + \
             self.chesstable['height']    + \
             self.chesstable['z']         + \
@@ -361,13 +368,18 @@ class PieceMoverActionServer:
                 self.move_locs[pos]  = self.compute_target(x, y, z_move)
 
     def hover_over(self, pos):
+        # When moving to hover over a piece, we lookup the move location,
+        # and replace the computed angle for the shoulder lift joint
+        # with -pi/2, so that the arm moves with the gripper way out
+        # of the way of any of the pieces.  Once we get there, we
+        # bend the shoulder_lift_joint back down to where it should be.
         arm_joints,arm_up_poses = self.move_locs[pos]
         arm_up_poses = list(arm_up_poses) # convert from tuple to list
         shoulder_lift_idx = arm_joints.index(self.side + "_shoulder_lift_joint")
         arm_up_poses[shoulder_lift_idx] = -math.pi/2
         self.move_arm(self.side, arm_joints, [arm_up_poses], 2.5)
         print "Hovering high over", pos
-        self.settle()
+#        self.settle()
         loc = self.move_locs[pos]
         print "Moving to hover low over", pos
         self.move_arm(self.side, loc[0], [loc[1]], 1.0)
@@ -480,7 +492,7 @@ def main():
             if to_pos in mover.grasp_locs:
                 break
 
-        print "Moving to hove over location", from_pos, "..."
+        print "Moving to hover over location", from_pos, "..."
         mover.hover_over(from_pos)
         print "...done.  Grasping piece..."
         mover.grasp(from_pos)
